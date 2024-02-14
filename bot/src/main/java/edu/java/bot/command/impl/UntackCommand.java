@@ -28,8 +28,7 @@ public class UntackCommand implements Command {
             String url = ParserUtils.parseUrl(update.message().text());
             log.info("Отслеживание " + url + " прекращено!");
             return new SendMessage(update.message().chat().id(), String.format("Отслеживание %s прекращено!", url));
-        }
-        catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return new SendMessage(update.message().chat().id(), LINK_MISSING);
         }
     }

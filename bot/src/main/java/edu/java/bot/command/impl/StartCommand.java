@@ -6,6 +6,7 @@ import edu.java.bot.command.Command;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import static edu.java.bot.util.BotUtil.REGISTRATION;
+
 @Slf4j
 @Component
 public class StartCommand implements Command {

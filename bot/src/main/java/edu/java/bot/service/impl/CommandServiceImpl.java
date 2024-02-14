@@ -14,11 +14,13 @@ public class CommandServiceImpl implements CommandService {
     private final List<Command> commandList;
 
     private final HashMap<String, Command> commandMap;
+
     public CommandServiceImpl(
         List<Command> commandList
     ) {
         this.commandList = commandList;
-        commandMap = (HashMap<String, Command>) commandList.stream().collect(Collectors.toMap(Command::command, Function.identity()));
+        commandMap = (HashMap<String, Command>) commandList.stream()
+            .collect(Collectors.toMap(Command::command, Function.identity()));
     }
 
     @Override

@@ -17,6 +17,7 @@ public abstract class Handler {
         log.info(stringLog);
         return new SendMessage(update.message().chat().id(), stringLog);
     }
+
     public Handler bind(Handler next) {
         this.next = next;
         return next;

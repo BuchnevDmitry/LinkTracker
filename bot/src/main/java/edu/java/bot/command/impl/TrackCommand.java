@@ -30,8 +30,7 @@ public class TrackCommand implements Command {
             Handler handlerUrl = new StackOverflowHandler();
             handlerUrl.bind(new GitHubHandler());
             return handlerUrl.handle(update);
-        }
-        catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return new SendMessage(update.message().chat().id(), LINK_MISSING);
         }
     }

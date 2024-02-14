@@ -23,8 +23,7 @@ public class UserMessageServiceImpl implements UserMessageService {
         try {
             String commandName = ParserUtils.parseCommandName(update.message().text());
             return commandService.getCommand(commandName).handle(update);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             log.error(e.getMessage());
             log.info(COMMAND_NOT_FOUNT);
             return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUNT).parseMode(ParseMode.HTML);
