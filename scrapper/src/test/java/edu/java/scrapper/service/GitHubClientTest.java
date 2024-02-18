@@ -1,32 +1,33 @@
 package edu.java.scrapper.service;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.RepositoryRequest;
 import edu.java.scrapper.model.RepositoryResponse;
 import edu.java.scrapper.service.impl.GitHubClientImpl;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.OffsetDateTime;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-@WireMockTest
 public class GitHubClientTest {
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    @RegisterExtension
+    static WireMockExtension wireMock = WireMockExtension.newInstance().options(wireMockConfig()
+            .port(8080))
+        .build();
 
     private GitHubClient gitHubClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        String baseUrl = wireMockRule.baseUrl();
+        String baseUrl = wireMock.baseUrl();
         gitHubClient = new GitHubClientImpl(WebClient.builder(), baseUrl);
     }
 

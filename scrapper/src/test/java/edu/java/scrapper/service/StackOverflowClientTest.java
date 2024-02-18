@@ -1,33 +1,35 @@
 package edu.java.scrapper.service;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.QuestionRequest;
 import edu.java.scrapper.model.QuestionResponse;
 import edu.java.scrapper.service.impl.StackOverflowClientImpl;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-@WireMockTest
 public class StackOverflowClientTest {
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    @RegisterExtension
+    static WireMockExtension wireMock = WireMockExtension.newInstance().options(wireMockConfig()
+        .port(8080))
+        .build();
 
     private StackOverflowClient stackOverflowClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        String baseUrl = wireMockRule.baseUrl();
+        String baseUrl = wireMock.baseUrl();
+        System.out.println(baseUrl);
         stackOverflowClient = new StackOverflowClientImpl(WebClient.builder(), baseUrl);
     }
 
@@ -58,7 +60,7 @@ public class StackOverflowClientTest {
                                     ]
                             }
                           """)));
-
+        System.out.println(wireMock.getStubMappings());
         QuestionRequest request = new QuestionRequest(number,order,sort,site);
         QuestionResponse response = stackOverflowClient.fetchQuestion(request);
 
