@@ -12,16 +12,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ClientConfiguration {
 
     @Bean
-    public WebClient.Builder getWebClientBuilder() {
-        return WebClient.builder();
-    }
-    @Bean
     public GitHubClient getGitHubClient() {
-        return new GitHubClientImpl(getWebClientBuilder(), "https://api.github.com/repos/");
+        return new GitHubClientImpl(WebClient.builder(), "https://api.github.com/repos/");
     }
 
     @Bean
     public StackOverflowClient stackOverflowClient() {
-        return new StackOverflowClientImpl(getWebClientBuilder(), "https://api.stackexchange.com/2.3/questions/");
+        return new StackOverflowClientImpl(WebClient.builder(), "https://api.stackexchange.com/2.3/questions/");
     }
 }
