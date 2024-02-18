@@ -7,7 +7,7 @@ import edu.java.scrapper.model.RepositoryResponse;
 import edu.java.scrapper.service.impl.GitHubClientImpl;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.OffsetDateTime;
