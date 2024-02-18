@@ -4,9 +4,7 @@ import edu.java.model.RepositoryRequest;
 import edu.java.model.RepositoryResponse;
 import edu.java.service.GitHubClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 public class GitHubClientImpl implements GitHubClient {
 
@@ -15,7 +13,8 @@ public class GitHubClientImpl implements GitHubClient {
     public GitHubClientImpl(
         WebClient.Builder webClientBuilder,
         @Value("https://api.github.com/repos/")
-        String baseUrl) {
+        String baseUrl
+    ) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 

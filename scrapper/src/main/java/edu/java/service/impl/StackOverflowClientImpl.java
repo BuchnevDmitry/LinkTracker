@@ -2,7 +2,6 @@ package edu.java.service.impl;
 
 import edu.java.model.QuestionRequest;
 import edu.java.model.QuestionResponse;
-import edu.java.model.RepositoryResponse;
 import edu.java.service.StackOverflowClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,9 +13,11 @@ public class StackOverflowClientImpl implements StackOverflowClient {
     public StackOverflowClientImpl(
         WebClient.Builder webClientBuilder,
         @Value("https://api.stackexchange.com/2.3/questions/")
-        String baseUrl) {
+        String baseUrl
+    ) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
+
     @Override
     public QuestionResponse fetchQuestion(QuestionRequest request) {
         return this.webClient.get()
