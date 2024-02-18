@@ -2,10 +2,9 @@ package edu.java.scrapper.service;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.model.RepositoryRequest;
-import edu.java.model.RepositoryResponse;
-import edu.java.service.GitHubClient;
-import edu.java.service.impl.GitHubClientImpl;
+import edu.java.scrapper.model.RepositoryRequest;
+import edu.java.scrapper.model.RepositoryResponse;
+import edu.java.scrapper.service.impl.GitHubClientImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

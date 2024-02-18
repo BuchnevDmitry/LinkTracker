@@ -1,4 +1,4 @@
-package edu.java.configuration;
+package edu.java.scrapper.configuration;
 
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;

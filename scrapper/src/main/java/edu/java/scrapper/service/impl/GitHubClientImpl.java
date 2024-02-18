@@ -1,8 +1,8 @@
-package edu.java.service.impl;
+package edu.java.scrapper.service.impl;
 
-import edu.java.model.RepositoryRequest;
-import edu.java.model.RepositoryResponse;
-import edu.java.service.GitHubClient;
+import edu.java.scrapper.model.RepositoryResponse;
+import edu.java.scrapper.service.GitHubClient;
+import edu.java.scrapper.model.RepositoryRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 

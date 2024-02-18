@@ -2,10 +2,9 @@ package edu.java.scrapper.service;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.model.QuestionRequest;
-import edu.java.model.QuestionResponse;
-import edu.java.service.StackOverflowClient;
-import edu.java.service.impl.StackOverflowClientImpl;
+import edu.java.scrapper.model.QuestionRequest;
+import edu.java.scrapper.model.QuestionResponse;
+import edu.java.scrapper.service.impl.StackOverflowClientImpl;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import org.junit.Before;
