@@ -13,7 +13,7 @@ public class ClientConfiguration {
 
     @Bean
     public WebClient.Builder getWebClientBuilder() {
-        return WebClient.builder().build().mutate();
+        return WebClient.builder();
     }
     @Bean
     public GitHubClient getGitHubClient() {
