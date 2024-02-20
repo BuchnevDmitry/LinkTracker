@@ -5,7 +5,7 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.CommandService;
 import edu.java.bot.service.UserMessageService;
-import edu.java.bot.util.ParserUtils;
+import edu.java.bot.util.ParserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,10 @@ public class UserMessageServiceImpl implements UserMessageService {
     @Override
     public SendMessage process(Update update) {
         try {
-            String commandName = ParserUtils.parseCommandName(update.message().text());
+            String commandName = ParserUtil.parseCommandName(update.message().text());
             return commandService.getCommand(commandName).handle(update);
         } catch (NullPointerException e) {
-            log.error(e.getMessage());
-            log.info(COMMAND_NOT_FOUNT);
+            log.info(String.format("%s %s", COMMAND_NOT_FOUNT, e.getMessage()));
             return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUNT).parseMode(ParseMode.HTML);
         }
     }

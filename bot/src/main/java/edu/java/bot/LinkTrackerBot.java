@@ -8,37 +8,44 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.command.Command;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.UserMessageService;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
-@Component public class LinkTrackerBot extends TelegramBot implements Bot {
+
+@Component
+public class LinkTrackerBot extends TelegramBot {
 
     private final UserMessageService userMessageService;
+    private final List<Command> commandList;
 
     public LinkTrackerBot(
         ApplicationConfig applicationConfig, UserMessageService userMessageService, List<Command> commandList
     ) {
         super(applicationConfig.telegramToken());
         this.userMessageService = userMessageService;
+        this.commandList = commandList;
+    }
+
+    @PostConstruct
+    void init() {
         start();
         setMyCommands(commandList);
     }
 
     private void serve(Update update) {
-        this.execute(userMessageService.process(update));
+        if (update.message() != null) {
+            this.execute(userMessageService.process(update));
+        }
     }
 
-    @Override public int process(List<Update> updates) {
+    public int process(List<Update> updates) {
         updates.forEach(this::serve);
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    @Override public void start() {
+    public void start() {
         this.setUpdatesListener(this::process);
-    }
-
-    @Override public void close() {
-        this.close();
     }
 
     public void setMyCommands(List<Command> commandList) {

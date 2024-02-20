@@ -5,8 +5,8 @@ import com.pengrad.telegrambot.request.SendMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class Handler {
-    private Handler next;
+public abstract class HandlerLink {
+    private HandlerLink next;
 
     public SendMessage handle(Update update) {
         if (next != null) {
@@ -18,7 +18,8 @@ public abstract class Handler {
         return new SendMessage(update.message().chat().id(), stringLog);
     }
 
-    public Handler bind(Handler next) {
+
+    public HandlerLink bind(HandlerLink next) {
         this.next = next;
         return next;
     }

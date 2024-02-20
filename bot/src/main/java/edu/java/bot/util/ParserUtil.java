@@ -1,10 +1,10 @@
 package edu.java.bot.util;
 
-public final class ParserUtils {
+public final class ParserUtil {
 
     public static final String WHITESPACE_REGEX = "\\s+";
 
-    private ParserUtils() {
+    private ParserUtil() {
     }
 
     public static String parseCommandName(String message) {
