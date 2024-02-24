@@ -3,7 +3,6 @@ package edu.java.scrapper.service;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.QuestionRequest;
 import edu.java.scrapper.model.QuestionResponse;
-import edu.java.scrapper.service.impl.StackOverflowClientImpl;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class StackOverflowClientTest {
         .port(8080))
         .build();
 
-    private StackOverflowClient stackOverflowClient;
+    private StackOverflowClientImpl stackOverflowClient;
 
     @BeforeEach
     public void setUp() {
@@ -60,7 +59,7 @@ public class StackOverflowClientTest {
                                     ]
                             }
                           """)));
-        System.out.println(wireMock.getStubMappings());
+
         QuestionRequest request = new QuestionRequest(number,order,sort,site);
         QuestionResponse response = stackOverflowClient.fetchQuestion(request);
 

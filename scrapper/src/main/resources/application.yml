@@ -1,8 +1,11 @@
 app:
   scheduler:
     enable: true
-    interval: 10s
-    force-check-delay: 10s
+    interval: PT10S
+    force-check-delay: PT10S
+  link:
+    git-hub: "https://api.github.com/repos/"
+    stack-overflow: "https://api.stackexchange.com/2.3/questions/"
 
 spring:
   application:

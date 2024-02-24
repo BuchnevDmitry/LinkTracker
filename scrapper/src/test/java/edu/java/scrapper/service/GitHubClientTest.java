@@ -3,7 +3,6 @@ package edu.java.scrapper.service;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.RepositoryRequest;
 import edu.java.scrapper.model.RepositoryResponse;
-import edu.java.scrapper.service.impl.GitHubClientImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
@@ -23,7 +22,7 @@ public class GitHubClientTest {
             .port(8080))
         .build();
 
-    private GitHubClient gitHubClient;
+    private GitHubClientImpl gitHubClient;
 
     @BeforeEach
     public void setUp() {

@@ -1,14 +1,16 @@
 package edu.java.scrapper.configuration;
 
-import java.time.Duration;
+import edu.java.scrapper.service.LinkUpdaterScheduler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
+@EnableScheduling
 public class SchedulerConfiguration {
     @Bean
-    public Duration schedulerInterval(ApplicationConfig applicationConfig) {
-        return applicationConfig.scheduler().interval();
+    public LinkUpdaterScheduler linkUpdaterScheduler() {
+        return new LinkUpdaterScheduler();
     }
 
 }

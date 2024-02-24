@@ -1,24 +1,22 @@
-package edu.java.scrapper.service.impl;
+package edu.java.scrapper.service;
 
 import edu.java.scrapper.model.QuestionRequest;
 import edu.java.scrapper.model.QuestionResponse;
-import edu.java.scrapper.service.StackOverflowClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 
-public class StackOverflowClientImpl implements StackOverflowClient {
+public class StackOverflowClientImpl {
 
     private final WebClient webClient;
 
     public StackOverflowClientImpl(
         WebClient.Builder webClientBuilder,
-        @Value("https://api.stackexchange.com/2.3/questions/")
+        @Value("${app.link.stack-overflow}")
         String baseUrl
     ) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
-    @Override
     public QuestionResponse fetchQuestion(QuestionRequest request) {
         return this.webClient.get()
             .uri(uriBuilder -> uriBuilder

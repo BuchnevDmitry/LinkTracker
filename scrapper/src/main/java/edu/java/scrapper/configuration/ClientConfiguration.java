@@ -1,9 +1,7 @@
 package edu.java.scrapper.configuration;
 
-import edu.java.scrapper.service.GitHubClient;
-import edu.java.scrapper.service.StackOverflowClient;
-import edu.java.scrapper.service.impl.GitHubClientImpl;
-import edu.java.scrapper.service.impl.StackOverflowClientImpl;
+import edu.java.scrapper.service.GitHubClientImpl;
+import edu.java.scrapper.service.StackOverflowClientImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,12 +10,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ClientConfiguration {
 
     @Bean
-    public GitHubClient getGitHubClient() {
-        return new GitHubClientImpl(WebClient.builder(), "https://api.github.com/repos/");
+    public GitHubClientImpl gitHubClient(ApplicationConfig applicationConfig) {
+        return new GitHubClientImpl(WebClient.builder(), applicationConfig.gitHub());
     }
 
     @Bean
-    public StackOverflowClient stackOverflowClient() {
-        return new StackOverflowClientImpl(WebClient.builder(), "https://api.stackexchange.com/2.3/questions/");
+    public StackOverflowClientImpl stackOverflowClient(ApplicationConfig applicationConfig) {
+        return new StackOverflowClientImpl(WebClient.builder(), applicationConfig.stackOverflow());
     }
 }
