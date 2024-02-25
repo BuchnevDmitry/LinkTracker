@@ -8,9 +8,9 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app.link", ignoreUnknownFields = false)
 public record ApplicationConfig(
     @NotEmpty
-    String gitHub,
+    String gitHubUri,
     @NotEmpty
-    String stackOverflow
+    String stackOverflowUri
 
 ) {
 }

@@ -22,12 +22,12 @@ public class GitHubClientTest {
             .port(8080))
         .build();
 
-    private GitHubClientImpl gitHubClient;
+    private GitHubClient gitHubClient;
 
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        gitHubClient = new GitHubClientImpl(WebClient.builder(), baseUrl);
+        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl);
     }
 
     @Test

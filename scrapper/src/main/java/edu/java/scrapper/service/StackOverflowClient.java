@@ -5,11 +5,11 @@ import edu.java.scrapper.model.QuestionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 
-public class StackOverflowClientImpl {
+public class StackOverflowClient {
 
     private final WebClient webClient;
 
-    public StackOverflowClientImpl(
+    public StackOverflowClient(
         WebClient.Builder webClientBuilder,
         @Value("${app.link.stack-overflow}")
         String baseUrl

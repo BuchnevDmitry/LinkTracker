@@ -23,13 +23,13 @@ public class StackOverflowClientTest {
         .port(8080))
         .build();
 
-    private StackOverflowClientImpl stackOverflowClient;
+    private StackOverflowClient stackOverflowClient;
 
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
         System.out.println(baseUrl);
-        stackOverflowClient = new StackOverflowClientImpl(WebClient.builder(), baseUrl);
+        stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl);
     }
 
     @Test

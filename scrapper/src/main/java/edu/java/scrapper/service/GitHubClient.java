@@ -5,11 +5,11 @@ import edu.java.scrapper.model.RepositoryResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 
-public class GitHubClientImpl {
+public class GitHubClient {
 
     private final WebClient webClient;
 
-    public GitHubClientImpl(
+    public GitHubClient(
         WebClient.Builder webClientBuilder,
         @Value("${app.link.git-hub}")
         String baseUrl
