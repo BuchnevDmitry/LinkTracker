@@ -1,15 +1,15 @@
-package edu.java.bot.api.exception;
+package edu.java.scrapper.api.exception;
 
-import edu.java.bot.api.model.ApiErrorResponse;
+import edu.java.scrapper.api.model.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Arrays;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.util.Arrays;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

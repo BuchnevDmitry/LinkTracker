@@ -125,7 +125,6 @@
             <artifactId>kafka</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- http://localhost:8081/swagger-ui/index.html -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
