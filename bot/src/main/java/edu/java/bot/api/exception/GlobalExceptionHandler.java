@@ -1,6 +1,8 @@
 package edu.java.bot.api.exception;
 
 import edu.java.bot.api.model.ApiErrorResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,6 +15,11 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "400",
+            description = "Некорректные параметры запроса")
+    })
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse handleRuntimeErrors(HttpMessageNotReadableException ex) {
