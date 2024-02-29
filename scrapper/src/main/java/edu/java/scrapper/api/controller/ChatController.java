@@ -1,5 +1,6 @@
 package edu.java.scrapper.api.controller;
 
+import edu.java.scrapper.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,7 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/tg-chat")
-public class TgChatController {
+public class ChatController {
+
+    private final ChatService chatService;
+
+    public ChatController(ChatService chatService) {
+        this.chatService = chatService;
+    }
 
     @Operation(summary = "Зарегистрировать чат")
     @ApiResponses(value = {
@@ -24,6 +31,7 @@ public class TgChatController {
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     void registerChat(@PathVariable Long id) {
+        chatService.registerChat(id);
     }
 
     @Operation(summary = "Удалить чат")
@@ -35,5 +43,6 @@ public class TgChatController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     void deleteChat(@PathVariable Long id) {
+        chatService.deleteChat(id);
     }
 }
