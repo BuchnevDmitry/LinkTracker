@@ -28,7 +28,7 @@ public class UserMessageServiceImpl implements UserMessageService {
             log.info(String.format("%s %s", COMMAND_NOT_FOUNT, e.getMessage()));
             return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUNT).parseMode(ParseMode.HTML);
         } catch (ResponseException e) {
-            log.info("Ошибка запроса " + e.getMessage());
+            log.info("Ошибка запроса -> " + e.getMessage());
             return new SendMessage(update.message().chat().id(), e.getMessage());
         }
     }

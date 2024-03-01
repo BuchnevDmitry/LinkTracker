@@ -10,7 +10,10 @@ public record ApplicationConfig(
     @NotEmpty
     String gitHubUri,
     @NotEmpty
-    String stackOverflowUri
+    String stackOverflowUri,
+
+    @NotEmpty
+    String botUri
 
 ) {
 }

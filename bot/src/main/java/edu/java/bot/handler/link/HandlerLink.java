@@ -2,13 +2,21 @@ package edu.java.bot.handler.link;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.service.ScrapperClient;
+import java.net.URISyntaxException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class HandlerLink {
     private HandlerLink next;
 
-    public SendMessage handle(Update update) {
+    protected ScrapperClient scrapperClient;
+
+    protected void setScrapperClient(ScrapperClient scrapperClient) {
+        this.scrapperClient = scrapperClient;
+    }
+
+    public SendMessage handle(Update update) throws URISyntaxException {
         if (next != null) {
             log.info("Передача ссылки в обработчик " + next.getClass().getName());
             return next.handle(update);

@@ -1,10 +1,13 @@
 package edu.java.bot.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.bot.api.exception.ResponseException;
 import edu.java.bot.model.request.AddLinkRequest;
 import edu.java.bot.model.request.RemoveLinkRequest;
+import edu.java.bot.model.response.ApiErrorResponse;
 import edu.java.bot.model.response.LinkResponse;
 import edu.java.bot.model.response.ListLinksResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -17,13 +20,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class ScrapperClient {
     private final RestClient restClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private final String tgChatPath = "tg-chat/{id}";
     private final String linkPath = "/links";
     private final String tgChatIdHeader = "Tg-Chat-Id";
 
     public ScrapperClient(
         RestClient.Builder restClientBuilder,
-        @Value("${app.link.scrapper-uri}") String baseUrl
+        @Value("${app.scrapper-uri}") String baseUrl
     ) {
         this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
@@ -33,7 +39,8 @@ public class ScrapperClient {
             .uri(tgChatPath, id)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new ResponseException(response.getStatusCode().toString());
+                ApiErrorResponse apiErrorResponse = objectMapper.readValue(response.getBody(), ApiErrorResponse.class);
+                throw new ResponseException(apiErrorResponse.description());
             })
             .toBodilessEntity();
     }
@@ -43,7 +50,8 @@ public class ScrapperClient {
             .uri(tgChatPath, id)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new ResponseException(response.getStatusCode().toString());
+                ApiErrorResponse apiErrorResponse = objectMapper.readValue(response.getBody(), ApiErrorResponse.class);
+                throw new ResponseException(apiErrorResponse.description());
             })
             .toBodilessEntity();
     }
@@ -54,7 +62,11 @@ public class ScrapperClient {
                .header(tgChatIdHeader, String.valueOf(tgChatId))
                .retrieve()
                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                  throw new ResponseException(response.getStatusCode().toString());
+                   ApiErrorResponse apiErrorResponse = objectMapper.readValue(
+                       response.getBody(),
+                       ApiErrorResponse.class
+                   );
+                   throw new ResponseException(apiErrorResponse.description());
                })
                .body(ListLinksResponse.class);
     }
@@ -67,7 +79,8 @@ public class ScrapperClient {
             .body(linkRequest)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new ResponseException(response.getStatusCode().toString());
+                ApiErrorResponse apiErrorResponse = objectMapper.readValue(response.getBody(), ApiErrorResponse.class);
+                throw new ResponseException(apiErrorResponse.description());
             })
             .body(LinkResponse.class);
     }
@@ -79,7 +92,8 @@ public class ScrapperClient {
             .body(linkRequest)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                throw new ResponseException(response.getStatusCode().toString());
+                ApiErrorResponse apiErrorResponse = objectMapper.readValue(response.getBody(), ApiErrorResponse.class);
+                throw new ResponseException(apiErrorResponse.description());
             })
             .body(LinkResponse.class);
     }
