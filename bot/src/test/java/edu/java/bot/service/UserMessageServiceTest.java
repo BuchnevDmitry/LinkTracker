@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static edu.java.bot.util.BotUtil.COMMAND_NOT_FOUNT;
+import static edu.java.bot.util.BotUtil.COMMAND_NOT_FOUND;
 import static edu.java.bot.util.BotUtil.REGISTRATION;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +34,7 @@ public class UserMessageServiceTest {
 
         Mockito.when(commandService.getCommand(updateMock.message().text())).thenReturn(null);
         SendMessage response = userMessageService.process(updateMock);
-        Assertions.assertEquals(COMMAND_NOT_FOUNT, response.getParameters().get("text"));
+        Assertions.assertEquals(COMMAND_NOT_FOUND, response.getParameters().get("text"));
     }
 
     @Test

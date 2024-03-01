@@ -9,7 +9,7 @@ import edu.java.bot.service.ScrapperClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUNT;
+import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUND;
 
 @Slf4j
 @Component
@@ -42,6 +42,6 @@ public class ListCommand implements Command {
                 );
             return new SendMessage(update.message().chat().id(), result.toString()).parseMode(ParseMode.HTML);
         }
-        return new SendMessage(update.message().chat().id(), TRACK_LINKS_NOT_FOUNT).parseMode(ParseMode.HTML);
+        return new SendMessage(update.message().chat().id(), TRACK_LINKS_NOT_FOUND).parseMode(ParseMode.HTML);
     }
 }

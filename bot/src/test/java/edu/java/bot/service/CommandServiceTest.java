@@ -28,7 +28,7 @@ public class CommandServiceTest {
     private CommandServiceImpl commandService;
     @Spy
     private List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(
-        new BindHandlerLink()), new HelpCommand());
+        new LinkService(new BindHandlerLink())), new HelpCommand());
 
     @Test
     void getCommand_shouldGetTrackCommandClass_whenCommandNameIsTrack () {

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import edu.java.bot.command.impl.UntackCommand;
 import edu.java.bot.handler.link.BindHandlerLink;
+import edu.java.bot.service.LinkService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static edu.java.bot.util.BotUtil.LINK_MISSING;
 import static edu.java.bot.util.BotUtil.REGISTRATION;
-import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUNT;
+import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUND;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,14 +42,14 @@ public class CommandTest {
 
         SendMessage result = listCommand.handle(mockUpdate);
 
-        Assertions.assertEquals(result.getParameters().get("text"), TRACK_LINKS_NOT_FOUNT);
+        Assertions.assertEquals(result.getParameters().get("text"), TRACK_LINKS_NOT_FOUND);
         Assertions.assertEquals(result.getParameters().get("parse_mode"), "HTML");
 
     }
     @ParameterizedTest
     @MethodSource("provideUrlForTrackCommandHandle")
     void trackCommandHandle_getValidResponse(String url, String responseText) {
-        TrackCommand trackCommand = new TrackCommand(new BindHandlerLink());
+        TrackCommand trackCommand = new TrackCommand(new LinkService(new BindHandlerLink()));
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -117,8 +118,8 @@ public class CommandTest {
 
     @Test
     void helpCommandHandle_getValidResponse() {
-        List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(
-            new BindHandlerLink()));
+        List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(new LinkService(
+            new BindHandlerLink())));
         HelpCommand helpCommand = new HelpCommand(commandList);
         StringBuilder validResponseText = new StringBuilder();
         String delimiter = " -- ";

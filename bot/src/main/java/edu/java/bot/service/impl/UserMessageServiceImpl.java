@@ -10,7 +10,7 @@ import edu.java.bot.util.ParserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import static edu.java.bot.util.BotUtil.COMMAND_NOT_FOUNT;
+import static edu.java.bot.util.BotUtil.COMMAND_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class UserMessageServiceImpl implements UserMessageService {
             String commandName = ParserUtil.parseCommandName(update.message().text());
             return commandService.getCommand(commandName).handle(update);
         } catch (NullPointerException e) {
-            log.info(String.format("%s %s", COMMAND_NOT_FOUNT, e.getMessage()));
-            return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUNT).parseMode(ParseMode.HTML);
+            log.info(String.format("%s %s", COMMAND_NOT_FOUND, e.getMessage()));
+            return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUND).parseMode(ParseMode.HTML);
         } catch (ResponseException e) {
             log.info("Ошибка запроса -> " + e.getMessage());
             return new SendMessage(update.message().chat().id(), e.getMessage());
