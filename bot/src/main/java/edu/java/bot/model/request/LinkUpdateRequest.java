@@ -1,4 +1,4 @@
-package edu.java.bot.api.model;
+package edu.java.bot.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

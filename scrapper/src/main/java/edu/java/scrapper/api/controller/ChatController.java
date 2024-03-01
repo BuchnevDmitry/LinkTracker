@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tg-chat")
 public class ChatController {
-
     private final ChatService chatService;
 
     public ChatController(ChatService chatService) {

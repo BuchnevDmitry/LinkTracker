@@ -3,6 +3,7 @@ package edu.java.bot.service.impl;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.api.exception.ResponseException;
 import edu.java.bot.service.CommandService;
 import edu.java.bot.service.UserMessageService;
 import edu.java.bot.util.ParserUtil;
@@ -26,6 +27,9 @@ public class UserMessageServiceImpl implements UserMessageService {
         } catch (NullPointerException e) {
             log.info(String.format("%s %s", COMMAND_NOT_FOUNT, e.getMessage()));
             return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUNT).parseMode(ParseMode.HTML);
+        } catch (ResponseException e) {
+            log.info("Ошибка запроса " + e.getMessage());
+            return new SendMessage(update.message().chat().id(), e.getMessage());
         }
     }
 }

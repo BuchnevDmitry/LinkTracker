@@ -1,10 +1,7 @@
 package edu.java.bot.api.controller;
 
-import edu.java.bot.api.model.LinkUpdateRequest;
+import edu.java.bot.model.request.LinkUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/updates")
 public class BotController {
-
     @Operation(summary = "Отправить обновление")
     @ApiResponses(value = {
         @ApiResponse(

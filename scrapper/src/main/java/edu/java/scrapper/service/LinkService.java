@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface LinkService {
     List<Link> getLinks(Long tgChatId);
+
     Link addLink(Long tgChatId, URI uri);
+
     Link deleteLink(Long tgChatId, URI uri);
+
     boolean existLink(Long tgChatId, URI uri);
 }

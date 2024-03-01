@@ -1,8 +1,8 @@
 package edu.java.scrapper.service;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import edu.java.scrapper.model.RepositoryRequest;
-import edu.java.scrapper.model.RepositoryResponse;
+import edu.java.scrapper.model.request.RepositoryRequest;
+import edu.java.scrapper.model.response.RepositoryResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;

@@ -4,16 +4,18 @@ import edu.java.scrapper.api.exception.AlreadyExistsException;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.service.LinkService;
-import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LinkServiceImpl implements LinkService {
+
     private final Map<Long, List<Link>> links = new HashMap<>();
+
     @Override
     public List<Link> getLinks(Long tgChatId) {
         return links.getOrDefault(tgChatId, new ArrayList<>());
@@ -27,8 +29,7 @@ public class LinkServiceImpl implements LinkService {
             linkList.add(link);
             links.put(tgChatId, linkList);
             return link;
-        }
-        else {
+        } else {
             throw new AlreadyExistsException("Ссылка уже добавлена");
         }
     }
@@ -40,8 +41,7 @@ public class LinkServiceImpl implements LinkService {
             List<Link> linkList = links.get(tgChatId);
             linkList.remove(link);
             return link;
-        }
-        else {
+        } else {
             throw new NotFoundException("Ссылка не найдена");
         }
     }

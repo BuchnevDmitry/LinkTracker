@@ -1,6 +1,6 @@
 package edu.java.bot.api.exception;
 
-import edu.java.bot.api.model.ApiErrorResponse;
+import edu.java.bot.model.response.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Arrays;

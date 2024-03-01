@@ -1,10 +1,10 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.api.model.ApiErrorResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import edu.java.scrapper.model.response.ApiErrorResponse;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ApiErrorResponseBuilder {

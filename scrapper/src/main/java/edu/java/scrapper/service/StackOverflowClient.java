@@ -1,7 +1,7 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.model.QuestionRequest;
-import edu.java.scrapper.model.QuestionResponse;
+import edu.java.scrapper.model.request.QuestionRequest;
+import edu.java.scrapper.model.response.QuestionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 

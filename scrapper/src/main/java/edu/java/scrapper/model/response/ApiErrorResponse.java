@@ -1,4 +1,4 @@
-package edu.java.scrapper.api.model;
+package edu.java.scrapper.model.response;
 
 import java.util.List;
 

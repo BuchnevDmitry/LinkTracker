@@ -1,14 +1,15 @@
 package edu.java.scrapper.api.controller;
 
 import edu.java.scrapper.api.mapper.LinkMapper;
-import edu.java.scrapper.api.model.AddLinkRequest;
-import edu.java.scrapper.api.model.LinkResponse;
-import edu.java.scrapper.api.model.ListLinksResponse;
-import edu.java.scrapper.api.model.RemoveLinkRequest;
+import edu.java.scrapper.model.request.AddLinkRequest;
+import edu.java.scrapper.model.request.RemoveLinkRequest;
+import edu.java.scrapper.model.response.LinkResponse;
+import edu.java.scrapper.model.response.ListLinksResponse;
 import edu.java.scrapper.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +54,7 @@ public class LinkController {
     @ResponseStatus(HttpStatus.OK)
     LinkResponse addLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody AddLinkRequest request
+        @RequestBody @Valid AddLinkRequest request
     ) {
         return linkMapper.mapLinkToResponse(linkService.addLink(tgChatId, request.link()));
     }
@@ -68,7 +69,7 @@ public class LinkController {
     @ResponseStatus(HttpStatus.OK)
     LinkResponse deleteLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody RemoveLinkRequest request
+        @RequestBody @Valid RemoveLinkRequest request
     ) {
         return linkMapper.mapLinkToResponse(linkService.deleteLink(tgChatId, request.link()));
     }

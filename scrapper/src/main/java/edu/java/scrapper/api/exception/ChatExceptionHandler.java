@@ -1,7 +1,7 @@
 package edu.java.scrapper.api.exception;
 
 import edu.java.scrapper.api.controller.ChatController;
-import edu.java.scrapper.api.model.ApiErrorResponse;
+import edu.java.scrapper.model.response.ApiErrorResponse;
 import edu.java.scrapper.service.ApiErrorResponseBuilder;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

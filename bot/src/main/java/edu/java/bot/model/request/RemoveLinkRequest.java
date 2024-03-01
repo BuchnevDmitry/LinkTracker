@@ -1,4 +1,4 @@
-package edu.java.scrapper.api.model;
+package edu.java.bot.model.request;
 
 import java.net.URI;
 

@@ -1,4 +1,4 @@
-package edu.java.scrapper.model;
+package edu.java.scrapper.model.request;
 
 public record QuestionRequest(
     String number,
