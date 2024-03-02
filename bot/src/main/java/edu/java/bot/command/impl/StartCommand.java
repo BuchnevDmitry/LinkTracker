@@ -13,8 +13,12 @@ import static edu.java.bot.util.BotUtil.REGISTRATION;
 @Component
 public class StartCommand implements Command {
 
-    @Autowired
     private ScrapperClient scrapperClient;
+
+    @Autowired
+    public void setScrapperClient(ScrapperClient scrapperClient) {
+        this.scrapperClient = scrapperClient;
+    }
 
     @Override
     public String command() {

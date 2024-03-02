@@ -18,8 +18,12 @@ import static edu.java.bot.util.BotUtil.LINK_MISSING;
 @Component
 public class UntackCommand implements Command {
 
-    @Autowired
     private ScrapperClient scrapperClient;
+
+    @Autowired
+    public void setScrapperClient(ScrapperClient scrapperClient) {
+        this.scrapperClient = scrapperClient;
+    }
 
     @Override
     public String command() {
@@ -38,12 +42,16 @@ public class UntackCommand implements Command {
             String url = ParserUtil.parseUrl(update.message().text());
             LinkResponse linkResponse = scrapperClient.deleteLink(
                 update.message().chat().id(),
-                new RemoveLinkRequest(new URI(url)));
+                new RemoveLinkRequest(new URI(url))
+            );
             log.info("Отслеживание " + url + " прекращено!");
             //TODO: логика проверки ссылки
-            return new SendMessage(update.message().chat().id(),
+            return new SendMessage(
+                update.message().chat().id(),
                 String.format("Отслеживание id: %d url: %s прекращено!",
-                    linkResponse.id(), linkResponse.url()));
+                    linkResponse.id(), linkResponse.url()
+                )
+            );
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             return new SendMessage(update.message().chat().id(), LINK_MISSING);
         } catch (URISyntaxException e) {

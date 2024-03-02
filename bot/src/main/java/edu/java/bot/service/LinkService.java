@@ -17,8 +17,13 @@ import static edu.java.bot.util.BotUtil.HANDLER_NOT_FOUND;
 @Service
 public class LinkService {
 
-    @Autowired
     private ScrapperClient scrapperClient;
+
+    @Autowired
+    public void setScrapperClient(ScrapperClient scrapperClient) {
+        this.scrapperClient = scrapperClient;
+    }
+
     private final BindHandlerLink bindHandlerLink;
 
     public LinkService(BindHandlerLink bindHandlerLink) {
@@ -31,8 +36,9 @@ public class LinkService {
         if (bindHandlerLink.binding().handle(url)) {
             LinkResponse link = scrapperClient.addLink(
                 update.message().chat().id(),
-                new AddLinkRequest(new URI(url)));
-            String stringLog = String.format("Отслеживание id: %d, url: %s", link.id(), link.url());
+                new AddLinkRequest(new URI(url))
+            );
+            String stringLog = String.format("Отслеживание id: %d url: %s", link.id(), link.url());
             log.info(stringLog);
             return new SendMessage(update.message().chat().id(), stringLog);
         }

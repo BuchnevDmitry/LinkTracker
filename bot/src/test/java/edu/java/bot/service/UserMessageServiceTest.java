@@ -42,11 +42,16 @@ public class UserMessageServiceTest {
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
+        ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
+        StartCommand startCommand = new StartCommand();
+        startCommand.setScrapperClient(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn("/start");
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
-        Mockito.when(commandService.getCommand(updateMock.message().text())).thenReturn(new StartCommand());
+        Mockito.when(commandService.getCommand(updateMock.message().text())).thenReturn(startCommand);
+        Mockito.doNothing().when(scrapperClient).registerChat(Mockito.anyLong());
+
 
         SendMessage response = userMessageService.process(updateMock);
 

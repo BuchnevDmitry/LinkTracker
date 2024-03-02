@@ -15,8 +15,12 @@ import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUND;
 @Component
 public class ListCommand implements Command {
 
-    @Autowired
     private ScrapperClient scrapperClient;
+
+    @Autowired
+    public void setScrapperClient(ScrapperClient scrapperClient) {
+        this.scrapperClient = scrapperClient;
+    }
 
     @Override
     public String command() {
