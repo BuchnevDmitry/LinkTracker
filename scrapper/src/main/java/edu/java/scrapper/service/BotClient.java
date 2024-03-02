@@ -1,7 +1,10 @@
 package edu.java.scrapper.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.scrapper.api.exception.ResponseException;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
+import edu.java.scrapper.model.response.ApiErrorResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class BotClient {
 
     private final RestClient restClient;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public BotClient(
         RestClient.Builder restClientBuilder,
@@ -27,7 +33,8 @@ public class BotClient {
             .body(linkRequest)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-               throw new ResponseException(response.getStatusCode().toString());
+                ApiErrorResponse apiErrorResponse = objectMapper.readValue(response.getBody(), ApiErrorResponse.class);
+                throw new ResponseException(apiErrorResponse.description());
            })
            .toBodilessEntity();
     }
