@@ -20,7 +20,9 @@ public class ContainerTest extends IntegrationTest {
                 int result = resultSet.getInt(1);
                 Assertions.assertEquals(result, 1);
             }
-
+            connection.close();
+            statement.close();
+            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
