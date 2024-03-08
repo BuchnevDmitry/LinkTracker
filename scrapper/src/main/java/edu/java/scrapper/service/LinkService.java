@@ -1,17 +1,16 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.api.exception.BadRequestException;
-import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.api.exception.NotFoundException;
+import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
-
+import edu.java.scrapper.model.response.LinkResponse;
+import edu.java.scrapper.model.response.ListLinksResponse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import edu.java.scrapper.model.response.LinkResponse;
-import edu.java.scrapper.model.response.ListLinksResponse;
 import org.springframework.stereotype.Service;
 
 @Service

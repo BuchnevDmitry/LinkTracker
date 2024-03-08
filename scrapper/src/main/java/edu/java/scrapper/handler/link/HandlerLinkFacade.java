@@ -1,8 +1,8 @@
 package edu.java.scrapper.handler.link;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class HandlerLinkFacade {
@@ -15,7 +15,7 @@ public class HandlerLinkFacade {
     @PostConstruct
     void init() {
         for (int i = 0; i < handlerLinks.size() - 1; i++) {
-            handlerLinks.get(i).bind(handlerLinks.get(i+1));
+            handlerLinks.get(i).bind(handlerLinks.get(i + 1));
         }
     }
 

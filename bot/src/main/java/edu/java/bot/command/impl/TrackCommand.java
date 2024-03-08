@@ -7,9 +7,9 @@ import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.command.Command;
 import edu.java.bot.model.request.AddLinkRequest;
 import edu.java.bot.model.response.LinkResponse;
+import edu.java.bot.util.ParserUtil;
 import java.net.URI;
 import java.net.URISyntaxException;
-import edu.java.bot.util.ParserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +22,7 @@ import static edu.java.bot.util.BotMessages.LINK_WRONG_FORMAT;
 public class TrackCommand implements Command {
 
     private final ScrapperClient scrapperClient;
+
     @Override
     public String command() {
         return "/track";

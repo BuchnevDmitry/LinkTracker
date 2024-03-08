@@ -80,8 +80,8 @@ public class ScrapperClient {
 
     private ExchangeFilterFunction errorHandlingFilter() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            if (clientResponse.statusCode() != null &&
-                (clientResponse.statusCode().is5xxServerError() || clientResponse.statusCode().is4xxClientError())) {
+            if (clientResponse.statusCode() != null
+                && (clientResponse.statusCode().is5xxServerError() || clientResponse.statusCode().is4xxClientError())) {
                 return clientResponse.bodyToMono(ApiErrorResponse.class)
                     .flatMap(errorBody -> {
                         return Mono.error(new ResponseException(errorBody.description()));

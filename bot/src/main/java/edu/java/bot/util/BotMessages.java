@@ -9,5 +9,5 @@ public final class BotMessages {
     public static final String LINK_MISSING = "Отсутствует ссылка!";
     public static final String COMMAND_NOT_FOUND = "<i><b>Команда неизвестна!</b></i>";
     public static final String LINK_WRONG_FORMAT = "Неверный формат ссылки";
-
+    public static final String ERROR_PARSE_URL = "Ошибка парсинга url";
 }

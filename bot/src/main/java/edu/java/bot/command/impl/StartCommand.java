@@ -2,8 +2,8 @@ package edu.java.bot.command.impl;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.command.Command;
 import edu.java.bot.client.ScrapperClient;
+import edu.java.bot.command.Command;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

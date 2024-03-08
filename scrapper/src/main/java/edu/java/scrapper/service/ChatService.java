@@ -1,8 +1,7 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.api.exception.NotFoundException;
-
+import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
