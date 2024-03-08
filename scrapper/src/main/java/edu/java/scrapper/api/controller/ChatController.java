@@ -4,6 +4,7 @@ import edu.java.scrapper.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,7 @@ public class ChatController {
     })
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    void registerChat(@PathVariable Long id) {
+    public void registerChat(@PathVariable @NotNull Long id) {
         chatService.registerChat(id);
     }
 
@@ -41,7 +42,7 @@ public class ChatController {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    void deleteChat(@PathVariable Long id) {
+    public void deleteChat(@PathVariable @NotNull Long id) {
         chatService.deleteChat(id);
     }
 }

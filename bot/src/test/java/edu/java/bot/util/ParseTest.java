@@ -1,5 +1,6 @@
 package edu.java.bot.util;
 
+import edu.java.bot.api.exception.ParseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class ParseTest {
     @Test
     void parseCommandName_getNullExceptionCommandName_whenCommandNameIsNotExist() {
         String message = null;
-        Assertions.assertThrows(NullPointerException.class, () -> ParserUtil.parseCommandName(message));
+        Assertions.assertThrows(ParseException.class, () -> ParserUtil.parseCommandName(message));
     }
 
     @Test
@@ -27,7 +28,7 @@ class ParseTest {
     void parseUrl_getValidUrl_whenUrlIsNotExist() {
         String url = "";
         String message = String.format("/track %s", url);
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> ParserUtil.parseUrl(message));
+        Assertions.assertThrows(ParseException.class, () -> ParserUtil.parseUrl(message));
     }
 
 }

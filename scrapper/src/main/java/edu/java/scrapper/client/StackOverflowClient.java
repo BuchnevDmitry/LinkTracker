@@ -1,8 +1,10 @@
-package edu.java.scrapper.service;
+package edu.java.scrapper.client;
 
+import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.model.request.QuestionRequest;
 import edu.java.scrapper.model.response.QuestionResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class StackOverflowClient {
@@ -20,12 +22,16 @@ public class StackOverflowClient {
     public QuestionResponse fetchQuestion(QuestionRequest request) {
         return this.webClient.get()
             .uri(uriBuilder -> uriBuilder
-                .path(String.format("%s", request.number()))
-                .queryParam("order", request.order())
-                .queryParam("sort", request.sort())
-                .queryParam("site", request.site())
+                .path(String.format("%s", request.getNumber()))
+                .queryParam("order", request.getOrder())
+                .queryParam("sort", request.getSort())
+                .queryParam("site", request.getSite())
                 .build())
-            .retrieve().bodyToMono(QuestionResponse.class)
+            .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                throw new BadRequestException("Ошибка запроса информации о вопросе");
+            })
+            .bodyToMono(QuestionResponse.class)
             .block();
     }
 }

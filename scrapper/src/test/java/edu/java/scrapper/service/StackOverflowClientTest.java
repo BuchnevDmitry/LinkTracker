@@ -1,6 +1,7 @@
 package edu.java.scrapper.service;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.model.request.QuestionRequest;
 import edu.java.scrapper.model.response.QuestionResponse;
 import java.time.Instant;

@@ -1,6 +1,5 @@
 package edu.java.scrapper.api.controller;
 
-import edu.java.scrapper.api.mapper.LinkMapper;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
@@ -13,9 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,11 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class LinkController {
 
     private final LinkService linkService;
-    private final LinkMapper linkMapper;
 
-    public LinkController(LinkService linkService, LinkMapper linkMapper) {
+    public LinkController(LinkService linkService) {
         this.linkService = linkService;
-        this.linkMapper = linkMapper;
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
@@ -38,10 +35,10 @@ public class LinkController {
             responseCode = "200",
             description = "Ссылки успешно получены")
     })
-    @GetMapping
+    @GetMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
-    ListLinksResponse getLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
-        return linkMapper.mapLinkToResponse(linkService.getLinks(tgChatId));
+    ListLinksResponse getLinks(@PathVariable Long tgChatId) {
+        return linkService.getLinks(tgChatId);
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
@@ -50,13 +47,13 @@ public class LinkController {
             responseCode = "200",
             description = "Ссылка успешно добавлена")
     })
-    @PostMapping
+    @PostMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
     LinkResponse addLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @PathVariable Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        return linkMapper.mapLinkToResponse(linkService.addLink(tgChatId, request.link()));
+        return linkService.addLink(tgChatId, request.link());
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -65,13 +62,13 @@ public class LinkController {
             responseCode = "200",
             description = "Ссылка успешно убрана")
     })
-    @DeleteMapping
+    @DeleteMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
     LinkResponse deleteLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @PathVariable Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest request
     ) {
-        return linkMapper.mapLinkToResponse(linkService.deleteLink(tgChatId, request.link()));
+        return linkService.deleteLink(tgChatId, request.link());
     }
 
 }

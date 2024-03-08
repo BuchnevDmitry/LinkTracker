@@ -4,24 +4,22 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.command.Command;
 import edu.java.bot.command.impl.HelpCommand;
 import edu.java.bot.command.impl.ListCommand;
 import edu.java.bot.command.impl.StartCommand;
 import edu.java.bot.command.impl.TrackCommand;
+import edu.java.bot.command.impl.UntackCommand;
+import edu.java.bot.model.request.AddLinkRequest;
+import edu.java.bot.model.request.RemoveLinkRequest;
+import edu.java.bot.model.response.LinkResponse;
+import edu.java.bot.model.response.ListLinksResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import edu.java.bot.command.impl.UntackCommand;
-import edu.java.bot.handler.link.BindHandlerLink;
-import edu.java.bot.model.request.AddLinkRequest;
-import edu.java.bot.model.request.RemoveLinkRequest;
-import edu.java.bot.model.response.LinkResponse;
-import edu.java.bot.model.response.ListLinksResponse;
-import edu.java.bot.service.LinkService;
-import edu.java.bot.service.ScrapperClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +28,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static edu.java.bot.util.BotUtil.LINK_MISSING;
-import static edu.java.bot.util.BotUtil.REGISTRATION;
-import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUND;
+import static edu.java.bot.util.BotMessages.LINK_MISSING;
+import static edu.java.bot.util.BotMessages.REGISTRATION;
+import static edu.java.bot.util.BotMessages.TRACK_LINKS_NOT_FOUND;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,12 +38,11 @@ public class CommandTest {
 
     @Test
     void listCommandHandle_shouldValidTextAndParseMode() {
-        ListCommand listCommand = new ListCommand();
         Update mockUpdate = mock(Update.class);
         Message mockMessage = mock(Message.class);
         Chat mockChat = mock(Chat.class);
         ScrapperClient scrapperClient = mock(ScrapperClient.class);
-        listCommand.setScrapperClient(scrapperClient);
+        ListCommand listCommand = new ListCommand(scrapperClient);
         Mockito.when(mockUpdate.message()).thenReturn(mockMessage);
         Mockito.when(mockMessage.chat()).thenReturn(mockChat);
         Mockito.when(mockChat.id()).thenReturn(123456L);
@@ -60,11 +57,9 @@ public class CommandTest {
     @ParameterizedTest
     @MethodSource("provideUrlForTrackCommandHandle")
     void trackCommandHandle_getValidResponse(String url, String responseText) throws URISyntaxException {
-        LinkService linkService = new LinkService(new BindHandlerLink());
-        TrackCommand trackCommand = new TrackCommand(linkService);
         LinkResponse linkResponse = new LinkResponse(1L, new URI(url));
         ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
-        linkService.setScrapperClient(scrapperClient);
+        TrackCommand trackCommand = new TrackCommand(scrapperClient);
         Mockito.lenient().when(scrapperClient.addLink(Mockito.anyLong(), Mockito.any(AddLinkRequest.class))).thenReturn(linkResponse);
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
@@ -85,7 +80,6 @@ public class CommandTest {
         return Stream.of(
             Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание id: 1 url: https://github.com/sanyarnd/tinkoff-java-course-2023/")),
             Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание id: 1 url: https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c")),
-            Arguments.of("unknownUrl", "Нет обработчика на данный url"),
             Arguments.of("", LINK_MISSING)
         );
     }
@@ -93,13 +87,12 @@ public class CommandTest {
     @ParameterizedTest
     @MethodSource("provideUrlForUntrackCommandHandle")
     void untrackCommandHandle_getValidResponse(String url, String responseText) throws URISyntaxException {
-        UntackCommand untackCommand = new UntackCommand();
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         ScrapperClient scrapperClient = mock(ScrapperClient.class);
         LinkResponse linkResponse = new LinkResponse(1L, new URI(url));
-        untackCommand.setScrapperClient(scrapperClient);
+        UntackCommand untackCommand = new UntackCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn(String.format("/untrack %s", url));
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
@@ -124,12 +117,11 @@ public class CommandTest {
 
     @Test
     void startCommandHandle_getValidResponse() {
-        StartCommand startCommand = new StartCommand();
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
-        startCommand.setScrapperClient(scrapperClient);
+        StartCommand startCommand = new StartCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
@@ -142,8 +134,8 @@ public class CommandTest {
 
     @Test
     void helpCommandHandle_getValidResponse() {
-        List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(new LinkService(
-            new BindHandlerLink())));
+        List<Command> commandList = List.of(new ListCommand(null), new StartCommand(null), new UntackCommand(
+            null), new TrackCommand(null));
         HelpCommand helpCommand = new HelpCommand(commandList);
         StringBuilder validResponseText = new StringBuilder();
         String delimiter = " -- ";

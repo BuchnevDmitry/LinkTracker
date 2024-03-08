@@ -1,8 +1,10 @@
-package edu.java.scrapper.api.exception;
+package edu.java.scrapper.api.exception.handler;
 
 import edu.java.scrapper.api.controller.LinkController;
+import edu.java.scrapper.api.exception.BadRequestException;
+import edu.java.scrapper.api.exception.NotFoundException;
+import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.model.response.ApiErrorResponse;
-import edu.java.scrapper.service.ApiErrorResponseBuilder;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -12,10 +14,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(assignableTypes = LinkController.class)
 public class LinkExceptionHandler {
-    private final ApiErrorResponseBuilder apiErrorResponseBuilder;
-
-    public LinkExceptionHandler(ApiErrorResponseBuilder apiErrorResponseBuilder) {
-        this.apiErrorResponseBuilder = apiErrorResponseBuilder;
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "400",
+            description = "Ссылка уже добавлена")
+    })
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse handleBadRequestException(BadRequestException ex) {
+        return ex.toApiErrorResponse();
     }
 
     @ApiResponses(value = {
@@ -26,7 +33,7 @@ public class LinkExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse handleNotFoundException(NotFoundException ex) {
-        return apiErrorResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        return ex.toApiErrorResponse();
     }
 
     @ApiResponses(value = {
@@ -34,9 +41,10 @@ public class LinkExceptionHandler {
             responseCode = "409",
             description = "Ссылка уже добавлена")
     })
-    @ExceptionHandler(AlreadyExistsException.class)
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiErrorResponse handleAlreadyExistsException(AlreadyExistsException ex) {
-        return apiErrorResponseBuilder.buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), ex);
+    public ApiErrorResponse handleAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        return ex.toApiErrorResponse();
     }
+
 }

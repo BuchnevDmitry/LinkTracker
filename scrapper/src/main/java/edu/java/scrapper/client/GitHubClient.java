@@ -1,8 +1,10 @@
-package edu.java.scrapper.service;
+package edu.java.scrapper.client;
 
+import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.RepositoryResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class GitHubClient {
@@ -20,7 +22,11 @@ public class GitHubClient {
     public RepositoryResponse fetchRepository(RepositoryRequest request) {
         return this.webClient.get()
             .uri("{username}/{repositoryName}", request.username(), request.repositoryName())
-            .retrieve().bodyToMono(RepositoryResponse.class)
+            .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                throw new BadRequestException("Ошибка запроса информации о резозитории");
+            })
+            .bodyToMono(RepositoryResponse.class)
             .block();
     }
 }

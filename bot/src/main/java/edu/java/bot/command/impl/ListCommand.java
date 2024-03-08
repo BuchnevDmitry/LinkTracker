@@ -5,22 +5,18 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.command.Command;
 import edu.java.bot.model.response.ListLinksResponse;
-import edu.java.bot.service.ScrapperClient;
+import edu.java.bot.client.ScrapperClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUND;
+import static edu.java.bot.util.BotMessages.TRACK_LINKS_NOT_FOUND;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ListCommand implements Command {
 
-    private ScrapperClient scrapperClient;
-
-    @Autowired
-    public void setScrapperClient(ScrapperClient scrapperClient) {
-        this.scrapperClient = scrapperClient;
-    }
+    private final ScrapperClient scrapperClient;
 
     @Override
     public String command() {

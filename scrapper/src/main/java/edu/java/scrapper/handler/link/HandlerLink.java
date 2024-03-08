@@ -1,4 +1,4 @@
-package edu.java.bot.handler.link;
+package edu.java.scrapper.handler.link;
 
 import lombok.extern.slf4j.Slf4j;
 

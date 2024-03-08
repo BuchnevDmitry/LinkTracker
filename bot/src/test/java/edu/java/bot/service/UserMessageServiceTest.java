@@ -4,8 +4,9 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.api.exception.NotFoundException;
+import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.command.impl.StartCommand;
-import edu.java.bot.service.impl.UserMessageServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,13 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static edu.java.bot.util.BotUtil.COMMAND_NOT_FOUND;
-import static edu.java.bot.util.BotUtil.REGISTRATION;
+import static edu.java.bot.util.BotMessages.COMMAND_NOT_FOUND;
+import static edu.java.bot.util.BotMessages.REGISTRATION;
 
 @ExtendWith(MockitoExtension.class)
 public class UserMessageServiceTest {
     @InjectMocks
-    private UserMessageServiceImpl userMessageService;
+    private UserMessageService userMessageService;
     @Mock
     private CommandService commandService;
     @Test
@@ -32,7 +33,7 @@ public class UserMessageServiceTest {
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
 
-        Mockito.when(commandService.getCommand(updateMock.message().text())).thenReturn(null);
+        Mockito.when(commandService.getCommand(updateMock.message().text())).thenThrow(new NotFoundException(COMMAND_NOT_FOUND));
         SendMessage response = userMessageService.process(updateMock);
         Assertions.assertEquals(COMMAND_NOT_FOUND, response.getParameters().get("text"));
     }
@@ -43,8 +44,7 @@ public class UserMessageServiceTest {
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
-        StartCommand startCommand = new StartCommand();
-        startCommand.setScrapperClient(scrapperClient);
+        StartCommand startCommand = new StartCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn("/start");
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
