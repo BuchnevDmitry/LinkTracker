@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static edu.java.bot.util.BotMessages.LINK_MISSING;
+import static edu.java.bot.util.BotMessages.LINK_WRONG_FORMAT;
 import static edu.java.bot.util.BotMessages.REGISTRATION;
 import static edu.java.bot.util.BotMessages.TRACK_LINKS_NOT_FOUND;
 import static org.mockito.Mockito.mock;
@@ -56,8 +57,13 @@ public class CommandTest {
     }
     @ParameterizedTest
     @MethodSource("provideUrlForTrackCommandHandle")
-    void trackCommandHandle_getValidResponse(String url, String responseText) throws URISyntaxException {
-        LinkResponse linkResponse = new LinkResponse(1L, new URI(url));
+    void trackCommandHandle_getValidResponse(String url, String responseText) {
+        LinkResponse linkResponse = null;
+        try {
+            linkResponse = new LinkResponse(1L, new URI(url));
+        } catch (URISyntaxException e) {
+            linkResponse = new LinkResponse(1L, Mockito.mock(URI.class));
+        }
         ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
         TrackCommand trackCommand = new TrackCommand(scrapperClient);
         Mockito.lenient().when(scrapperClient.addLink(Mockito.anyLong(), Mockito.any(AddLinkRequest.class))).thenReturn(linkResponse);
@@ -80,18 +86,24 @@ public class CommandTest {
         return Stream.of(
             Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание id: 1 url: https://github.com/sanyarnd/tinkoff-java-course-2023/")),
             Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание id: 1 url: https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c")),
-            Arguments.of("", LINK_MISSING)
+            Arguments.of("", LINK_MISSING),
+            Arguments.of("())()))()&&&&&&&&^^13))___", LINK_WRONG_FORMAT)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideUrlForUntrackCommandHandle")
-    void untrackCommandHandle_getValidResponse(String url, String responseText) throws URISyntaxException {
+    void untrackCommandHandle_getValidResponse(String url, String responseText) {
+        LinkResponse linkResponse = null;
+        try {
+            linkResponse = new LinkResponse(1L, new URI(url));
+        } catch (URISyntaxException e) {
+            linkResponse = new LinkResponse(1L, Mockito.mock(URI.class));
+        }
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         ScrapperClient scrapperClient = mock(ScrapperClient.class);
-        LinkResponse linkResponse = new LinkResponse(1L, new URI(url));
         UntackCommand untackCommand = new UntackCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn(String.format("/untrack %s", url));
@@ -111,7 +123,8 @@ public class CommandTest {
         return Stream.of(
             Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание id: 1 url: https://github.com/sanyarnd/tinkoff-java-course-2023/ прекращено!")),
             Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание id: 1 url: https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c прекращено!")),
-            Arguments.of("", LINK_MISSING)
+            Arguments.of("", LINK_MISSING),
+            Arguments.of("())()))()&&&&&&&&^^13))___", LINK_WRONG_FORMAT)
         );
     }
 

@@ -1,6 +1,5 @@
 package edu.java.bot.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.bot.api.exception.ResponseException;
 import edu.java.bot.model.request.AddLinkRequest;
 import edu.java.bot.model.request.RemoveLinkRequest;
@@ -8,7 +7,6 @@ import edu.java.bot.model.response.ApiErrorResponse;
 import edu.java.bot.model.response.LinkResponse;
 import edu.java.bot.model.response.ListLinksResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -21,10 +19,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class ScrapperClient {
     private final WebClient webClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private final String tgChatPath = "tg-chat/{id}";
     private final String linkPath = "/links/{tgChatId}";
 
