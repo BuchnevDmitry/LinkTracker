@@ -1,13 +1,12 @@
 package edu.java.bot.service;
 
+import edu.java.bot.api.exception.NotFoundException;
 import edu.java.bot.command.Command;
 import edu.java.bot.command.impl.HelpCommand;
 import edu.java.bot.command.impl.ListCommand;
 import edu.java.bot.command.impl.StartCommand;
 import edu.java.bot.command.impl.TrackCommand;
 import edu.java.bot.command.impl.UntackCommand;
-import edu.java.bot.handler.link.BindHandlerLink;
-import edu.java.bot.service.impl.CommandServiceImpl;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -25,10 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CommandServiceTest {
     @InjectMocks
-    private CommandServiceImpl commandService;
+    private CommandService commandService;
     @Spy
-    private List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(
-        new BindHandlerLink()), new HelpCommand());
+    private List<Command> commandList = List.of(new ListCommand(null), new StartCommand(null), new UntackCommand(
+        null), new TrackCommand(null), new HelpCommand());
 
     @Test
     void getCommand_shouldGetTrackCommandClass_whenCommandNameIsTrack () {
@@ -40,7 +39,7 @@ public class CommandServiceTest {
     @NullAndEmptySource
     @ValueSource(strings = "/command")
     void getCommand_shouldThrowException_whenCommandIsNotExist(String string) {
-        Assertions.assertEquals(null,commandService.getCommand(string));
+        Assertions.assertThrows(NotFoundException.class, () -> commandService.getCommand(string));
     }
 
     @ParameterizedTest

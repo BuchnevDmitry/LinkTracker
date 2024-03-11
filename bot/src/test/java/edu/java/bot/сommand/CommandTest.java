@@ -4,15 +4,22 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.command.Command;
 import edu.java.bot.command.impl.HelpCommand;
 import edu.java.bot.command.impl.ListCommand;
 import edu.java.bot.command.impl.StartCommand;
 import edu.java.bot.command.impl.TrackCommand;
+import edu.java.bot.command.impl.UntackCommand;
+import edu.java.bot.model.request.AddLinkRequest;
+import edu.java.bot.model.request.RemoveLinkRequest;
+import edu.java.bot.model.response.LinkResponse;
+import edu.java.bot.model.response.ListLinksResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import edu.java.bot.command.impl.UntackCommand;
-import edu.java.bot.handler.link.BindHandlerLink;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +28,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static edu.java.bot.util.BotUtil.LINK_MISSING;
-import static edu.java.bot.util.BotUtil.REGISTRATION;
-import static edu.java.bot.util.BotUtil.TRACK_LINKS_NOT_FOUNT;
+import static edu.java.bot.util.BotMessages.LINK_MISSING;
+import static edu.java.bot.util.BotMessages.LINK_WRONG_FORMAT;
+import static edu.java.bot.util.BotMessages.REGISTRATION;
+import static edu.java.bot.util.BotMessages.TRACK_LINKS_NOT_FOUND;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,24 +39,34 @@ public class CommandTest {
 
     @Test
     void listCommandHandle_shouldValidTextAndParseMode() {
-        ListCommand listCommand = new ListCommand();
         Update mockUpdate = mock(Update.class);
         Message mockMessage = mock(Message.class);
         Chat mockChat = mock(Chat.class);
+        ScrapperClient scrapperClient = mock(ScrapperClient.class);
+        ListCommand listCommand = new ListCommand(scrapperClient);
         Mockito.when(mockUpdate.message()).thenReturn(mockMessage);
         Mockito.when(mockMessage.chat()).thenReturn(mockChat);
         Mockito.when(mockChat.id()).thenReturn(123456L);
+        Mockito.when(scrapperClient.getLinks(Mockito.anyLong())).thenReturn(new ListLinksResponse(new ArrayList<>(), 0));
 
         SendMessage result = listCommand.handle(mockUpdate);
 
-        Assertions.assertEquals(result.getParameters().get("text"), TRACK_LINKS_NOT_FOUNT);
+        Assertions.assertEquals(result.getParameters().get("text"), TRACK_LINKS_NOT_FOUND);
         Assertions.assertEquals(result.getParameters().get("parse_mode"), "HTML");
 
     }
     @ParameterizedTest
     @MethodSource("provideUrlForTrackCommandHandle")
     void trackCommandHandle_getValidResponse(String url, String responseText) {
-        TrackCommand trackCommand = new TrackCommand(new BindHandlerLink());
+        LinkResponse linkResponse = null;
+        try {
+            linkResponse = new LinkResponse(1L, new URI(url));
+        } catch (URISyntaxException e) {
+            linkResponse = new LinkResponse(1L, Mockito.mock(URI.class));
+        }
+        ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
+        TrackCommand trackCommand = new TrackCommand(scrapperClient);
+        Mockito.lenient().when(scrapperClient.addLink(Mockito.anyLong(), Mockito.any(AddLinkRequest.class))).thenReturn(linkResponse);
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -66,24 +84,33 @@ public class CommandTest {
 
     private static Stream<Arguments> provideUrlForTrackCommandHandle() {
         return Stream.of(
-            Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание https://github.com/sanyarnd/tinkoff-java-course-2023/")),
-            Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c")),
-            Arguments.of("unknownUrl", "Нет обработчика на данный url!"),
-            Arguments.of("", LINK_MISSING)
+            Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание id: 1 url: https://github.com/sanyarnd/tinkoff-java-course-2023/")),
+            Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание id: 1 url: https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c")),
+            Arguments.of("", LINK_MISSING),
+            Arguments.of("())()))()&&&&&&&&^^13))___", LINK_WRONG_FORMAT)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideUrlForUntrackCommandHandle")
     void untrackCommandHandle_getValidResponse(String url, String responseText) {
-        UntackCommand untackCommand = new UntackCommand();
+        LinkResponse linkResponse = null;
+        try {
+            linkResponse = new LinkResponse(1L, new URI(url));
+        } catch (URISyntaxException e) {
+            linkResponse = new LinkResponse(1L, Mockito.mock(URI.class));
+        }
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
+        ScrapperClient scrapperClient = mock(ScrapperClient.class);
+        UntackCommand untackCommand = new UntackCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn(String.format("/untrack %s", url));
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
+        Mockito.lenient().when(scrapperClient.deleteLink(Mockito.anyLong(), Mockito.any(RemoveLinkRequest.class))).thenReturn(linkResponse);
+
 
         SendMessage response = untackCommand.handle(updateMock);
 
@@ -94,21 +121,24 @@ public class CommandTest {
 
     private static Stream<Arguments> provideUrlForUntrackCommandHandle() {
         return Stream.of(
-            Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание https://github.com/sanyarnd/tinkoff-java-course-2023/ прекращено!")),
-            Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c прекращено!")),
-            Arguments.of("", LINK_MISSING)
+            Arguments.of("https://github.com/sanyarnd/tinkoff-java-course-2023/", String.format("Отслеживание id: 1 url: https://github.com/sanyarnd/tinkoff-java-course-2023/ прекращено!")),
+            Arguments.of("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c", String.format("Отслеживание id: 1 url: https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c прекращено!")),
+            Arguments.of("", LINK_MISSING),
+            Arguments.of("())()))()&&&&&&&&^^13))___", LINK_WRONG_FORMAT)
         );
     }
 
     @Test
     void startCommandHandle_getValidResponse() {
-        StartCommand startCommand = new StartCommand();
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
+        ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
+        StartCommand startCommand = new StartCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
+        Mockito.doNothing().when(scrapperClient).registerChat(Mockito.anyLong());
 
         SendMessage response = startCommand.handle(updateMock);
 
@@ -117,8 +147,8 @@ public class CommandTest {
 
     @Test
     void helpCommandHandle_getValidResponse() {
-        List<Command> commandList = List.of(new ListCommand(), new StartCommand(), new UntackCommand(), new TrackCommand(
-            new BindHandlerLink()));
+        List<Command> commandList = List.of(new ListCommand(null), new StartCommand(null), new UntackCommand(
+            null), new TrackCommand(null));
         HelpCommand helpCommand = new HelpCommand(commandList);
         StringBuilder validResponseText = new StringBuilder();
         String delimiter = " -- ";
