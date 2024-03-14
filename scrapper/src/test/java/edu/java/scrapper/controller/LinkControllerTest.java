@@ -57,17 +57,18 @@ public class LinkControllerTest {
         Long tgChatId = 123L;
         String url = "https://github.com/user/rep";
         URI uri = new URI(url);
-        AddLinkRequest request = new AddLinkRequest(uri);
+        AddLinkRequest request = new AddLinkRequest(uri, "string");
 
         LinkResponse response = new LinkResponse(1L, uri);
-        when(linkService.addLink(tgChatId, request.link())).thenReturn(response);
+        when(linkService.addLink(tgChatId, request.url())).thenReturn(response);
 
         mockMvc.perform(post("/links/" + tgChatId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
                     "id":"1",
-                    "link":"https://github.com/user/rep"
+                    "url":"https://github.com/user/rep",
+                    "createdBy" : "string"
                     }
                     """))
             .andExpect(status().isOk());

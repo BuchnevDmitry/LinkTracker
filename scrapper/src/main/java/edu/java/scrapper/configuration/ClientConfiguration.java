@@ -18,4 +18,8 @@ public class ClientConfiguration {
     public StackOverflowClient stackOverflowClient(ApplicationConfig applicationConfig) {
         return new StackOverflowClient(WebClient.builder(), applicationConfig.stackOverflowUri());
     }
+
+//    public JdbcClient jdbcClient() {
+//        return JdbcClient.create()
+//    }
 }

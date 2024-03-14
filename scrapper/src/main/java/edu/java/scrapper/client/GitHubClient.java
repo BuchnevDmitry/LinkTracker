@@ -13,7 +13,7 @@ public class GitHubClient {
 
     public GitHubClient(
         WebClient.Builder webClientBuilder,
-        @Value("${app.link.git-hub}")
+        @Value("${app.url.git-hub}")
         String baseUrl
     ) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();

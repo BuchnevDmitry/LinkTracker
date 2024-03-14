@@ -53,7 +53,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        return linkService.addLink(tgChatId, request.link());
+        return linkService.addLink(tgChatId, request.url());
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
