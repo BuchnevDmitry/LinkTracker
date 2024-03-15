@@ -1,11 +1,12 @@
 package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.LinkController;
+import edu.java.scrapper.api.mapper.LinkMapper;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
-import edu.java.scrapper.model.response.ListLinksResponse;
-import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LinkControllerTest {
 
     @Mock
-    private LinkService linkService;
+    private LinkMapper linkMapper;
+    @Mock
+    private JdbcLinkService linkService;
 
     @InjectMocks
     private LinkController linkController;
@@ -44,9 +48,9 @@ public class LinkControllerTest {
     public void testGetLinks() throws Exception {
         Long tgChatId = 123L;
 
-        List<LinkResponse> links = new ArrayList<>();
+        List<Link> links = new ArrayList<>();
 
-        when(linkService.getLinks(tgChatId)).thenReturn(new ListLinksResponse(links, links.size()));
+        when(linkService.getLinks(tgChatId)).thenReturn(links);
 
         mockMvc.perform(get("/links/" + tgChatId))
             .andExpect(status().isOk());
@@ -59,16 +63,15 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         AddLinkRequest request = new AddLinkRequest(uri, "string");
 
-        LinkResponse response = new LinkResponse(1L, uri);
-        when(linkService.addLink(tgChatId, request.url())).thenReturn(response);
-
+        Link link = new Link(1L, uri, null, null, null);
+        Mockito.when(linkService.addLink(tgChatId, request)).thenReturn(link);
+        Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(post("/links/" + tgChatId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                    "id":"1",
                     "url":"https://github.com/user/rep",
-                    "createdBy" : "string"
+                    "createdBy":"string"
                     }
                     """))
             .andExpect(status().isOk());
@@ -81,15 +84,14 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         RemoveLinkRequest request = new RemoveLinkRequest(uri);
 
-        LinkResponse response = new LinkResponse(1L, uri);
-        when(linkService.deleteLink(tgChatId, request.link())).thenReturn(response);
-
+        Link link = new Link(1L, uri, null, null, null);
+        Mockito.when(linkService.deleteLink(tgChatId, request)).thenReturn(link);
+        Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(delete("/links/" + tgChatId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                    "id":"1",
-                    "link":"https://github.com/user/rep"
+                    "url":"https://github.com/user/rep"
                     }
                     """))
             .andExpect(status().isOk());

@@ -1,32 +1,12 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.api.exception.NotFoundException;
-import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.stereotype.Service;
+import edu.java.scrapper.model.request.AddChatRequest;
 
-@Service
-public class ChatService {
-    private final Map<Long, Long> chats = new HashMap<>();
+public interface ChatService {
+    void register(Long id, AddChatRequest chat);
 
-    public void registerChat(Long id) {
-        if (!chatExists(id)) {
-            chats.put(id, id);
-        } else {
-            throw new ResourceAlreadyExistsException("Чат уже зарегистрирован");
-        }
-    }
+    void unregister(Long id);
 
-    public void deleteChat(Long id) {
-        if (chatExists(id)) {
-            chats.remove(id);
-        } else {
-            throw new NotFoundException("Чат не существует");
-        }
-    }
+    boolean exist(Long id);
 
-    public boolean chatExists(Long id) {
-        return chats.containsKey(id);
-    }
 }

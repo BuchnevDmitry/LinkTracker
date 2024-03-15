@@ -1,10 +1,11 @@
 package edu.java.scrapper.api.controller;
 
+import edu.java.scrapper.api.mapper.LinkMapper;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
 import edu.java.scrapper.model.response.ListLinksResponse;
-import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,15 +19,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/links")
 public class LinkController {
 
-    private final LinkService linkService;
+    private final JdbcLinkService linkService;
 
-    public LinkController(LinkService linkService) {
+    private final LinkMapper linkMapper;
+
+    public LinkController(JdbcLinkService linkService, LinkMapper linkMapper) {
         this.linkService = linkService;
+        this.linkMapper = linkMapper;
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
@@ -38,7 +43,8 @@ public class LinkController {
     @GetMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
     ListLinksResponse getLinks(@PathVariable Long tgChatId) {
-        return linkService.getLinks(tgChatId);
+        List<LinkResponse> linkResponses = linkMapper.mapToDto(linkService.getLinks(tgChatId));
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
@@ -53,7 +59,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        return linkService.addLink(tgChatId, request.url());
+        return linkMapper.mapToDto(linkService.addLink(tgChatId, request));
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -68,7 +74,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest request
     ) {
-        return linkService.deleteLink(tgChatId, request.link());
+        return linkMapper.mapToDto(linkService.deleteLink(tgChatId, request));
     }
 
 }

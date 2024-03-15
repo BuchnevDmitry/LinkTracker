@@ -1,6 +1,7 @@
 package edu.java.bot.client;
 
 import edu.java.bot.api.exception.ResponseException;
+import edu.java.bot.model.request.AddChatRequest;
 import edu.java.bot.model.request.AddLinkRequest;
 import edu.java.bot.model.request.RemoveLinkRequest;
 import edu.java.bot.model.response.ApiErrorResponse;
@@ -29,9 +30,11 @@ public class ScrapperClient {
         this.webClient = restClientBuilder.filter(errorHandlingFilter()).baseUrl(baseUrl).build();
     }
 
-    public void registerChat(Long id) {
+    public void registerChat(Long id, AddChatRequest chatRequest) {
         webClient.post()
             .uri(tgChatPath, id)
+            .contentType(APPLICATION_JSON)
+            .body(Mono.just(chatRequest), AddChatRequest.class)
             .retrieve()
             .toBodilessEntity()
             .block();
@@ -78,6 +81,8 @@ public class ScrapperClient {
                 && (clientResponse.statusCode().is5xxServerError() || clientResponse.statusCode().is4xxClientError())) {
                 return clientResponse.bodyToMono(ApiErrorResponse.class)
                     .flatMap(errorBody -> {
+                        System.out.println(errorBody);
+                        log.error(errorBody.description());
                         return Mono.error(new ResponseException(errorBody.description()));
                     });
             }

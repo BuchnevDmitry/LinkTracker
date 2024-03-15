@@ -1,6 +1,7 @@
 package edu.java.scrapper.domain;
 
 import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.JdbcChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.util.List;
@@ -23,8 +24,9 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Rollback
     void addChatTest() {
         List<ChatResponse> chatResponsesBefore = chatRepository.findAll();
-        AddChatRequest chat = new AddChatRequest(1L, "name");
-        Assertions.assertDoesNotThrow(() -> chatRepository.add(chat));
+        AddChatRequest chat = new AddChatRequest("name");
+
+        Assertions.assertDoesNotThrow(() -> chatRepository.add(1L, chat));
         List<ChatResponse> chatResponsesAfter = chatRepository.findAll();
         Assertions.assertEquals(chatResponsesBefore.size() + 1, chatResponsesAfter.size());
 
@@ -34,10 +36,11 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void removeChatTest() {
-        AddChatRequest chat = new AddChatRequest(1L, "name");
-        chatRepository.add(chat);
+        Long id = 1L;
+        AddChatRequest chat = new AddChatRequest("name");
+        chatRepository.add(id, chat);
         List<ChatResponse> chatResponsesBefore = chatRepository.findAll();
-        chatRepository.remove(chat.id());
+        chatRepository.remove(id);
         List<ChatResponse> chatResponsesAfter = chatRepository.findAll();
         Assertions.assertEquals(chatResponsesBefore.size(), chatResponsesAfter.size() + 1);
     }
@@ -46,20 +49,22 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void repeatAddChatTest() {
-        AddChatRequest chat = new AddChatRequest(1L, "name");
-        chatRepository.add(chat);
-        Assertions.assertThrows(DuplicateKeyException.class, () -> chatRepository.add(chat));
+        Long id = 1L;
+        AddChatRequest chat = new AddChatRequest( "name");
+        chatRepository.add(id, chat);
+        Assertions.assertThrows(DuplicateKeyException.class, () -> chatRepository.add(id, chat));
     }
 
     @Test
     @Transactional
     @Rollback
     void existChatTest() {
-        AddChatRequest chat = new AddChatRequest(1L, "name");
-        chatRepository.add(chat);
-        Assertions.assertTrue(chatRepository.exist(chat.id()));
-        chatRepository.remove(chat.id());
-        Assertions.assertFalse(chatRepository.exist(chat.id()));
+        Long id = 1L;
+        AddChatRequest chat = new AddChatRequest( "name");
+        chatRepository.add(id, chat);
+        Assertions.assertTrue(chatRepository.exist(id));
+        chatRepository.remove(id);
+        Assertions.assertFalse(chatRepository.exist(id));
     }
 
 }

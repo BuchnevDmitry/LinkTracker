@@ -3,6 +3,7 @@ package edu.java.bot.сommand;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.command.Command;
@@ -11,6 +12,7 @@ import edu.java.bot.command.impl.ListCommand;
 import edu.java.bot.command.impl.StartCommand;
 import edu.java.bot.command.impl.TrackCommand;
 import edu.java.bot.command.impl.UntackCommand;
+import edu.java.bot.model.request.AddChatRequest;
 import edu.java.bot.model.request.AddLinkRequest;
 import edu.java.bot.model.request.RemoveLinkRequest;
 import edu.java.bot.model.response.LinkResponse;
@@ -70,10 +72,13 @@ public class CommandTest {
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
+        User user = mock(User.class);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().text()).thenReturn(String.format("/track %s", url));
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
+        Mockito.when(updateMock.message().from()).thenReturn(user);
+        Mockito.lenient().when(updateMock.message().from().username()).thenReturn("username");
 
         SendMessage response = trackCommand.handle(updateMock);
 
@@ -133,12 +138,15 @@ public class CommandTest {
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
+        User user = Mockito.mock(User.class);
         ScrapperClient scrapperClient = Mockito.mock(ScrapperClient.class);
         StartCommand startCommand = new StartCommand(scrapperClient);
         Mockito.when(updateMock.message()).thenReturn(messageMock);
         Mockito.when(updateMock.message().chat()).thenReturn(chatMock);
         Mockito.when(updateMock.message().chat().id()).thenReturn(1L);
-        Mockito.doNothing().when(scrapperClient).registerChat(Mockito.anyLong());
+        Mockito.when(updateMock.message().from()).thenReturn(user);
+        Mockito.when(updateMock.message().from().username()).thenReturn("username");
+        Mockito.doNothing().when(scrapperClient).registerChat(1L, new AddChatRequest("username"));
 
         SendMessage response = startCommand.handle(updateMock);
 
