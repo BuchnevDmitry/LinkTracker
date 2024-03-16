@@ -1,5 +1,9 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.client.BotClient;
+import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.LinkUpdater;
 import edu.java.scrapper.service.LinkUpdaterScheduler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class SchedulerConfiguration {
     @Bean
-    public LinkUpdaterScheduler linkUpdaterScheduler() {
-        return new LinkUpdaterScheduler();
+    public LinkUpdater linkUpdaterScheduler(
+        LinkService linkService,
+        HandlerLinkFacade handlerLinkFacade,
+        BotClient botClient
+    ) {
+        return new LinkUpdaterScheduler(linkService, handlerLinkFacade, botClient);
     }
 
 }

@@ -1,5 +1,6 @@
 package edu.java.scrapper.handler.link;
 
+import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.RepositoryResponse;
@@ -30,21 +31,19 @@ public class GitHubHandlerTest {
 
     @ParameterizedTest
     @MethodSource("provideUrlAndBooleanForHandle")
-    public void methodHandleTest(String url, boolean resultOutput) {
+    public void methodHandleTest(String url) {
         RepositoryRequest request = parseService.parseUrlToRepositoryRequest(url);
         RepositoryResponse response = Mockito.mock(RepositoryResponse.class);
         Mockito.lenient().when(gitHubClient.fetchRepository(request)).thenReturn(response);
 
-        boolean resultHandle = gitHubHandler.handle(url);
-
-        Assertions.assertEquals(resultHandle, resultOutput);
+        Assertions.assertThrows(BadRequestException.class, () -> gitHubHandler.handle(url));
 
     }
 
     private static Stream<Arguments> provideUrlAndBooleanForHandle() {
         return Stream.of(
-            Arguments.of("https://github.com/username/repname", true),
-            Arguments.of("https://noname.com/username/repname", false)
+            Arguments.of("https://adadsasddas/username/repname"),
+            Arguments.of("https://noname.com/username/repname")
         );
     }
 

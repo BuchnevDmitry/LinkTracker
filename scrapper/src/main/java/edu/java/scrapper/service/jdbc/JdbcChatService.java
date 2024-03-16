@@ -5,9 +5,11 @@ import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.service.ChatService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class JdbcChatService implements ChatService {
 
     private final ChatRepository chatRepository;

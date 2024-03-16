@@ -1,5 +1,6 @@
 package edu.java.scrapper.handler.link;
 
+import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.model.request.QuestionRequest;
 import edu.java.scrapper.model.response.QuestionResponse;
@@ -29,21 +30,19 @@ public class StackOverflowHandlerTest {
 
     @ParameterizedTest
     @MethodSource("provideUrlAndBooleanForHandle")
-    public void methodHandleTest(String url, boolean resultOutput) {
+    public void methodHandleTest(String url) {
         QuestionRequest request = parseService.parseUrlToQuestionRequest(url);
         QuestionResponse response = Mockito.mock(QuestionResponse.class);
         Mockito.lenient().when(stackOverflowClient.fetchQuestion(request)).thenReturn(response);
 
-        boolean resultHandle = stackOverflowHandler.handle(url);
-
-        Assertions.assertEquals(resultHandle, resultOutput);
+        Assertions.assertThrows(BadRequestException.class, () -> stackOverflowHandler.handle(url));
 
     }
 
     private static Stream<Arguments> provideUrlAndBooleanForHandle() {
         return Stream.of(
-            Arguments.of("https://stackoverflow.com/questions/78128827/name", true),
-            Arguments.of("https://noname.com/questions/78128827/name", false)
+            Arguments.of("https://reegwgregw/questions/78128827/name"),
+            Arguments.of("https://noname.com/questions/78128827/name")
         );
     }
 }

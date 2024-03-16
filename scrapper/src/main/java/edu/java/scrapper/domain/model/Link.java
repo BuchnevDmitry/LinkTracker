@@ -8,7 +8,8 @@ public record Link(
     URI url,
     OffsetDateTime lastCheckTime,
     OffsetDateTime createdAt,
-    String createdBy
+    String createdBy,
+    Integer hashInt
 ) {
 
 }

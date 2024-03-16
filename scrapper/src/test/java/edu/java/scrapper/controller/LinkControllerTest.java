@@ -63,7 +63,7 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         AddLinkRequest request = new AddLinkRequest(uri, "string");
 
-        Link link = new Link(1L, uri, null, null, null);
+        Link link = new Link(1L, uri, null, null, null, 1);
         Mockito.when(linkService.addLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(post("/links/" + tgChatId)
@@ -84,7 +84,7 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         RemoveLinkRequest request = new RemoveLinkRequest(uri);
 
-        Link link = new Link(1L, uri, null, null, null);
+        Link link = new Link(1L, uri, null, null, null, 1);
         Mockito.when(linkService.deleteLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(delete("/links/" + tgChatId)

@@ -1,16 +1,17 @@
 package edu.java.scrapper.handler.link;
 
+import edu.java.scrapper.api.exception.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class HandlerLink {
     private HandlerLink next;
 
-    public boolean handle(String url) {
+    public Integer handle(String url) {
         if (next != null) {
             return next.handle(url);
         }
-        return false;
+        throw new BadRequestException("Данную ссылку невозможно обработать");
     }
 
 

@@ -81,7 +81,6 @@ public class ScrapperClient {
                 && (clientResponse.statusCode().is5xxServerError() || clientResponse.statusCode().is4xxClientError())) {
                 return clientResponse.bodyToMono(ApiErrorResponse.class)
                     .flatMap(errorBody -> {
-                        System.out.println(errorBody);
                         log.error(errorBody.description());
                         return Mono.error(new ResponseException(errorBody.description()));
                     });

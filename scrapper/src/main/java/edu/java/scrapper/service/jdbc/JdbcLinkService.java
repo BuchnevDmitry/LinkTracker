@@ -1,6 +1,5 @@
 package edu.java.scrapper.service.jdbc;
 
-import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
@@ -8,7 +7,9 @@ import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
+import edu.java.scrapper.model.response.ChatResponse;
 import edu.java.scrapper.service.LinkService;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -25,24 +26,30 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    public List<Link> findAll(OffsetDateTime criteria) {
+        return linkRepository.findAll(criteria);
+    }
+
+    @Override
     public List<Link> getLinks(Long chatId) {
         return linkRepository.findLinks(chatId);
+    }
+
+    @Override
+    public List<ChatResponse> getChats(Long linkId) {
+        return linkRepository.findChats(linkId);
     }
 
     @Override
     public Link addLink(Long chatId, AddLinkRequest link) {
         String url = link.url().toString();
         if (!linkRepository.exist(url)) {
-            if (handlerLinkFacade.getChainHead().handle(url)) {
-                linkRepository.add(link);
-                Link linkByUrl = getByUrl(url);
-                linkRepository.addLinkToChat(chatId, linkByUrl.id());
-                return linkByUrl;
-            } else {
-                throw new BadRequestException("Данную ссылку невозможно обработать");
-            }
-        }
-        else {
+            Integer hash = handlerLinkFacade.getChainHead().handle(url);
+            linkRepository.add(link, hash);
+            Link linkByUrl = getByUrl(url);
+            linkRepository.addLinkToChat(chatId, linkByUrl.id());
+            return linkByUrl;
+        } else {
             Link linkByUrl = getByUrl(url);
             if (!exist(chatId, linkByUrl.id())) {
                 linkRepository.addLinkToChat(chatId, linkByUrl.id());
@@ -62,7 +69,7 @@ public class JdbcLinkService implements LinkService {
             }
             return linkByUrl;
         } else {
-            throw new NotFoundException("Ссылка не найдена");
+            throw new NotFoundException("Ссылка в данном чате не найдена");
         }
     }
 
@@ -73,8 +80,12 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     public Link getByUrl(String url) {
-        return linkRepository.findByUrl(url).orElseThrow(() -> new NotFoundException("Ссылка не найдена"));
+        return linkRepository.findByUrl(url).orElseThrow(() -> new NotFoundException("Ссылка с таким url не найдена"));
     }
 
+    @Override
+    public void updateLink(Long linkId, OffsetDateTime lastCheckTime, Integer hash) {
+        linkRepository.updateLink(linkId, lastCheckTime, hash);
+    }
 
 }

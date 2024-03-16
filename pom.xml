@@ -206,7 +206,6 @@
                     <configuration>
                         <release>${java.release}</release>
                         <parameters>true</parameters>
-
                         <compilerArgument>-Xlint:all</compilerArgument>
                         <compilerArgument>-Xdoclint:all</compilerArgument>
                     </configuration>

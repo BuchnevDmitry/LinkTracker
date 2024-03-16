@@ -1,10 +1,13 @@
 package edu.java.bot.api.controller;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.model.request.LinkUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/updates")
 public class BotController {
 
+    private final TelegramBot telegramBot;
+
+    public BotController(TelegramBot telegramBot) {
+        this.telegramBot = telegramBot;
+    }
+
     @Operation(summary = "Отправить обновление")
     @ApiResponses(value = {
         @ApiResponse(
@@ -25,5 +34,12 @@ public class BotController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping
     void addUpdate(@RequestBody @Valid LinkUpdateRequest request) {
+        List<Long> chats = request.tgChatIds();
+        for (Long chatId : chats) {
+            telegramBot.execute(new SendMessage(
+                chatId,
+                String.format("По url : %s %s", request.url(), request.description())
+            ));
+        }
     }
 }
