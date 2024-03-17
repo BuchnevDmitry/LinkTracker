@@ -13,6 +13,9 @@ public record ApplicationConfig(
     String stackOverflowUri,
 
     @NotEmpty
+    String gitHubToken,
+
+    @NotEmpty
     String botUri
 
 ) {

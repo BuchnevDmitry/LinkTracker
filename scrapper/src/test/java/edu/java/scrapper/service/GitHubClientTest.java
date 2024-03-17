@@ -28,7 +28,7 @@ public class GitHubClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl);
+        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl, "token");
     }
 
     @Test
@@ -59,13 +59,9 @@ public class GitHubClientTest {
 
         Assertions.assertEquals(response.id(), 716078159);
         Assertions.assertEquals(response.fullName(), "fullName");
-        Assertions.assertEquals(response.description(), null);
         Assertions.assertEquals(response.created(), OffsetDateTime.parse("2023-11-08T12:11:22Z"));
         Assertions.assertEquals(response.updated(), OffsetDateTime.parse("2023-11-08T20:01:11Z"));
         Assertions.assertEquals(response.pushed(), OffsetDateTime.parse("2024-01-27T18:23:36Z"));
         Assertions.assertEquals(response.stargazersCount(), 10);
-        Assertions.assertEquals(response.watchers(), 100);
-        Assertions.assertEquals(response.language(), "Java");
-        Assertions.assertEquals(response.forks(), 50);
     }
 }

@@ -6,6 +6,8 @@ import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
+import edu.java.scrapper.model.UpdateStatus;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +23,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-
 public class LinkServiceTest {
     @InjectMocks
     private LinkService linkService;
@@ -35,10 +36,11 @@ public class LinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
+        HandlerData handlerData = new HandlerData(1000, UpdateStatus.NOT_UPDATE, "desc");
         Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(false);
         Mockito.when(handlerLinkFacade.getChainHead()).thenReturn(Mockito.mock(HandlerLink.class));
-        Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(1000);
-        Mockito.doNothing().when(linkRepository).add(link, 1000);
+        Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(handlerData);
+        Mockito.doNothing().when(linkRepository).add(link, handlerData.hash());
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
         Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.id());

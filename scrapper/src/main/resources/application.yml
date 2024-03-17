@@ -5,9 +5,12 @@ app:
     force-check-delay: PT10S
   link:
     git-hub-uri: "https://api.github.com/repos/"
+    git-hub-token: ${GITHUB_TOKEN}
     stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
     bot-uri: "http://localhost:8090"
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: scrapper
   datasource:

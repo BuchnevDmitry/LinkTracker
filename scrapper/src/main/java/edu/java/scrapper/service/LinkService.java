@@ -5,12 +5,14 @@ import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +22,7 @@ public class LinkService {
 
     private final HandlerLinkFacade handlerLinkFacade;
 
-    private final LinkRepository linkRepository;
+    @Qualifier("jdbcLinkRepository") private final LinkRepository linkRepository;
 
     public List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time) {
         return linkRepository.findAllByLastCheckTimeBefore(time);
@@ -38,8 +40,8 @@ public class LinkService {
     public Link addLink(Long chatId, AddLinkRequest link) {
         String url = link.url().toString();
         if (!linkRepository.exists(url)) {
-            Integer hash = handlerLinkFacade.getChainHead().handle(url);
-            linkRepository.add(link, hash);
+            HandlerData handlerData = handlerLinkFacade.getChainHead().handle(url);
+            linkRepository.add(link, handlerData.hash());
             Link linkByUrl = getByUrl(url);
             linkRepository.addLinkToChat(chatId, linkByUrl.id());
             return linkByUrl;

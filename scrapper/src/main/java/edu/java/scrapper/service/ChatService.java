@@ -6,6 +6,7 @@ import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatRepository chatRepository;
+    @Qualifier("jdbcChatRepository") private final ChatRepository chatRepository;
 
     @Transactional
     public void register(Long id, AddChatRequest chat) {
