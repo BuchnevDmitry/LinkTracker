@@ -3,6 +3,7 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.domain.jooq.impl.JooqLinkRepository;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
@@ -11,6 +12,7 @@ import edu.java.scrapper.model.UpdateStatus;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.service.jooq.JooqLinkService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +26,15 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class JdbcLinkServiceTest {
+public class JooqLinkServiceTest {
+
     @InjectMocks
-    private JdbcLinkService linkService;
+    private JooqLinkService linkService;
     @Mock
-    private JdbcLinkRepository linkRepository;
+    private JooqLinkRepository linkRepository;
     @Mock
     private HandlerLinkFacade handlerLinkFacade;
+
 
     @Test
     void addLinkWithLinkNotExistTest() throws URISyntaxException {
@@ -96,6 +100,5 @@ public class JdbcLinkServiceTest {
         Mockito.when(linkRepository.existLinkToChat(chatId, linkResult.id())).thenReturn(false);
         Assertions.assertThrows(NotFoundException.class, () -> linkService.deleteLink(chatId, link));
     }
-
 
 }

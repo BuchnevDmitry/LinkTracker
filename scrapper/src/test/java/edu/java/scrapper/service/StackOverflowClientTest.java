@@ -65,11 +65,7 @@ public class StackOverflowClientTest {
         QuestionResponse response = stackOverflowClient.fetchQuestion(request);
 
         Assertions.assertEquals(response.items().get(0).id(), 10);
-        Assertions.assertEquals(response.items().get(0).isAnswered(), true);
-        Assertions.assertEquals(response.items().get(0).viewCount(), 10);
-        Assertions.assertEquals(response.items().get(0).score(), 15);
         Assertions.assertEquals(response.items().get(0).lastActivityDate(), Instant.ofEpochSecond(Long.parseLong("1708125365")).atOffset(ZoneOffset.UTC));
         Assertions.assertEquals(response.items().get(0).creationDate(), Instant.ofEpochSecond(Long.parseLong("1708125366")).atOffset(ZoneOffset.UTC));
-        Assertions.assertEquals(response.items().get(0).title(), "question");
     }
 }

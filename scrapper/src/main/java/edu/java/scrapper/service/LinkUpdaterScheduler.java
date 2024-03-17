@@ -3,6 +3,8 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
+import edu.java.scrapper.model.UpdateStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
@@ -33,16 +35,16 @@ public class LinkUpdaterScheduler implements LinkUpdater {
         OffsetDateTime criteria = now.minusMinutes(1);
         List<Link> linkList = linkService.findAll(criteria);
         for (Link link : linkList) {
-            Integer hash = handlerLinkFacade.getChainHead().handle(link.url().toString());
-            linkService.updateLink(link.id(), now, hash);
-            log.info(link.url() + "-> hash: " + hash);
+            HandlerData handlerData = handlerLinkFacade.getChainHead().handle(link.url().toString());
+            linkService.updateLink(link.id(), now, handlerData.hash());
+            log.info(link.url() + "-> hash: " + handlerData.hash());
             List<ChatResponse> longList = linkService.getChats(link.id());
             List<Long> chatIds = longList.stream().map(ChatResponse::id).toList();
-            if (!link.hashInt().equals(hash)) {
+            if (handlerData.typeUpdate().equals(UpdateStatus.UPDATE)) {
                 botClient.addUpdate(new LinkUpdateRequest(
                     link.id(),
                     link.url(),
-                    "появилось новое обновление",
+                    handlerData.description(),
                     chatIds
                 ));
             }

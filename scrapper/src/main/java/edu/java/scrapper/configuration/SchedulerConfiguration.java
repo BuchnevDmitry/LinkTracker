@@ -5,6 +5,7 @@ import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.service.LinkService;
 import edu.java.scrapper.service.LinkUpdater;
 import edu.java.scrapper.service.LinkUpdaterScheduler;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SchedulerConfiguration {
     @Bean
     public LinkUpdater linkUpdaterScheduler(
-        LinkService linkService,
+        @Qualifier("jdbcLinkService") LinkService linkService,
         HandlerLinkFacade handlerLinkFacade,
         BotClient botClient
     ) {
