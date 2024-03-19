@@ -47,7 +47,7 @@ public class GitHubHandler extends HandlerLink {
         RepositoryRequest repositoryRequest,
         RepositoryResponse repositoryResponse
     ) {
-        if (linkRepository.exists(url)) {
+        if (linkRepository.exist(url)) {
             List<RepositoryEventResponse> eventResponses = gitHubClient.fetchRepositoryEvent(repositoryRequest);
             Link link = linkRepository.findByUrl(url).get();
             if (!link.hashInt().equals(repositoryResponse.hashCode())) {

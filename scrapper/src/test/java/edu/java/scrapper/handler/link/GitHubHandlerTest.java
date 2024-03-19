@@ -71,7 +71,7 @@ public class GitHubHandlerTest {
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
         Mockito.when(gitHubClient.fetchRepositoryEvent(repositoryRequest)).thenReturn(events);
-        Mockito.when(linkRepository.exists(url)).thenReturn(true);
+        Mockito.when(linkRepository.exist(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = gitHubHandler.handle(url);
@@ -92,7 +92,7 @@ public class GitHubHandlerTest {
         RepositoryResponse repositoryResponse = new RepositoryResponse(linkId, username, time, time, time, 10L, 10);
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
-        Mockito.when(linkRepository.exists(url)).thenReturn(false);
+        Mockito.when(linkRepository.exist(url)).thenReturn(false);
 
         HandlerData handlerData = gitHubHandler.handle(url);
         HandlerData handlerDataResult = new HandlerData(repositoryResponse.hashCode(),LinkStatus.NOT_EXIST, "ссылки не существует");
@@ -113,7 +113,7 @@ public class GitHubHandlerTest {
         Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), username, repositoryResponse.hashCode());
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
-        Mockito.when(linkRepository.exists(url)).thenReturn(true);
+        Mockito.when(linkRepository.exist(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = gitHubHandler.handle(url);
