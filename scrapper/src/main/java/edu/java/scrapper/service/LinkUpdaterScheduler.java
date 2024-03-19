@@ -4,7 +4,7 @@ import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
-import edu.java.scrapper.model.UpdateStatus;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @Slf4j
-public class LinkUpdaterScheduler implements LinkUpdater {
+public class LinkUpdaterScheduler {
 
     private final LinkService linkService;
 
@@ -27,7 +27,6 @@ public class LinkUpdaterScheduler implements LinkUpdater {
         this.botClient = botClient;
     }
 
-    @Override
     @Scheduled(fixedDelayString = "${app.scheduler.interval}")
     public void update() {
         log.info("Ищем обновление!");
@@ -40,7 +39,7 @@ public class LinkUpdaterScheduler implements LinkUpdater {
             log.info(link.url() + "-> hash: " + handlerData.hash());
             List<ChatResponse> longList = linkService.getChats(link.id());
             List<Long> chatIds = longList.stream().map(ChatResponse::id).toList();
-            if (handlerData.typeUpdate().equals(UpdateStatus.UPDATE)) {
+            if (handlerData.typeUpdate().equals(LinkStatus.UPDATE)) {
                 botClient.addUpdate(new LinkUpdateRequest(
                     link.id(),
                     link.url(),

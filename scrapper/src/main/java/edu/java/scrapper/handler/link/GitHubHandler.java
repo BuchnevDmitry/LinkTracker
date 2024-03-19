@@ -4,7 +4,7 @@ import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.HandlerData;
-import edu.java.scrapper.model.UpdateStatus;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.RepositoryEventResponse;
 import edu.java.scrapper.model.response.RepositoryResponse;
@@ -37,58 +37,67 @@ public class GitHubHandler extends HandlerLink {
         if (url.startsWith("https://github.com/")) {
             RepositoryRequest repositoryRequest = parseService.parseUrlToRepositoryRequest(url);
             RepositoryResponse repositoryResponse = gitHubClient.fetchRepository(repositoryRequest);
-            List<RepositoryEventResponse> eventResponse = gitHubClient.fetchRepositoryEvent(repositoryRequest);
-            HandlerData defaultHandlerData = new HandlerData(
-                repositoryResponse.hashCode(),
-                UpdateStatus.NOT_UPDATE,
-                "Обновлений нет"
-            );
-            if (linkRepository.exist(url)) {
-                Link link = linkRepository.findByUrl(url).get();
-                if (!link.hashInt().equals(repositoryResponse.hashCode())) {
-                    return defaultHandlerData;
-                }
-                String updateMessage = findUpdates(eventResponse, link);
-                if (!updateMessage.isEmpty()) {
-                    return new HandlerData(
-                        repositoryResponse.hashCode(),
-                        UpdateStatus.UPDATE,
-                        updateMessage
-                    );
-                }
-
-            }
-            return defaultHandlerData;
+            return handleUpdates(url, repositoryRequest, repositoryResponse);
         }
         return super.handle(url);
     }
 
-    private String findUpdates(List<RepositoryEventResponse> eventResponses, Link link) {
+    private HandlerData handleUpdates(
+        String url,
+        RepositoryRequest repositoryRequest,
+        RepositoryResponse repositoryResponse
+    ) {
+        if (linkRepository.exist(url)) {
+            List<RepositoryEventResponse> eventResponses = gitHubClient.fetchRepositoryEvent(repositoryRequest);
+            Link link = linkRepository.findByUrl(url).get();
+            if (!link.hashInt().equals(repositoryResponse.hashCode())) {
+                String updateMessage = handleMessageUpdates(eventResponses, link);
+                if (!updateMessage.isEmpty()) {
+                    return new HandlerData(
+                        repositoryResponse.hashCode(),
+                        LinkStatus.UPDATE,
+                        updateMessage
+                    );
+                }
+            }
+            return new HandlerData(
+                repositoryResponse.hashCode(),
+                LinkStatus.NOT_UPDATE,
+                "обновлений нет"
+            );
+        }
+        return new HandlerData(
+            repositoryResponse.hashCode(),
+            LinkStatus.NOT_EXIST,
+            "ссылки не существует"
+        );
+    }
+
+    private String handleMessageUpdates(List<RepositoryEventResponse> eventResponses, Link link) {
         StringBuilder updateMessageBuilder = new StringBuilder();
-        updateMessageBuilder.append("События:\n");
         for (RepositoryEventResponse response : eventResponses) {
             if (link.lastCheckTime().isBefore(response.createdAt())) {
-                updateMessageBuilder.append(getUpdateMessage(response));
+                updateMessageBuilder.append(generateUpdateMessage(response));
             }
         }
         return updateMessageBuilder.toString();
     }
 
-    private String getUpdateMessage(RepositoryEventResponse response) {
+    private String generateUpdateMessage(RepositoryEventResponse response) {
         String message = "";
         String opened = "opened";
         if (response.type().equals("IssuesEvent") && response.payload().action().equals(opened)) {
-            message = "открылся новый тикет\n";
+            message = "открылся новый тикет \uD83D\uDD16 \n";
         } else if (response.type().equals("CreateEvent")
             && response.payload().refType().equals("branch")) {
-            message = "добавили новую ветку\n";
+            message = "добавили новую ветку \uD83C\uDF3F \n";
         } else if (response.type().equals("PushEvent") && !response.payload().commits().isEmpty()) {
-            message = "добавили новый коммит\n";
+            message = "добавили новый коммит \uD83D\uDCDD \n";
         } else if (response.type().equals("PullRequestEvent")
             && response.payload().action().equals(opened)) {
-            message = "создали новый pull request\n";
+            message = "создали новый pull request \uD83D\uDCE6\n";
         } else if (response.type().equals("WatchEvent") && response.payload().action().equals("started")) {
-            message = "в данном репозитории новая звезда";
+            message = "поставили звезду ⭐\uFE0F\n";
         }
         return message;
     }

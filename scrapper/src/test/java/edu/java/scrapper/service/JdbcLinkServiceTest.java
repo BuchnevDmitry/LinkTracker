@@ -7,7 +7,7 @@ import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
-import edu.java.scrapper.model.UpdateStatus;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.service.jdbc.JdbcLinkService;
@@ -37,7 +37,7 @@ public class JdbcLinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
-        HandlerData handlerData = new HandlerData(1000, UpdateStatus.NOT_UPDATE, "desc");
+        HandlerData handlerData = new HandlerData(1000, LinkStatus.NOT_UPDATE, "desc");
         Mockito.when(linkRepository.exist(link.url().toString())).thenReturn(false);
         Mockito.when(handlerLinkFacade.getChainHead()).thenReturn(Mockito.mock(HandlerLink.class));
         Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(handlerData);

@@ -3,7 +3,6 @@ package edu.java.scrapper.configuration;
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.service.LinkService;
-import edu.java.scrapper.service.LinkUpdater;
 import edu.java.scrapper.service.LinkUpdaterScheduler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class SchedulerConfiguration {
     @Bean
-    public LinkUpdater linkUpdaterScheduler(
+    public LinkUpdaterScheduler linkUpdaterScheduler(
         @Qualifier("jdbcLinkService") LinkService linkService,
         HandlerLinkFacade handlerLinkFacade,
         BotClient botClient

@@ -38,7 +38,7 @@ public class BotController {
         for (Long chatId : chats) {
             telegramBot.execute(new SendMessage(
                 chatId,
-                String.format("По url : %s %s", request.url(), request.description())
+                String.format("По url : %s\nОбновления:\n%s", request.url(), request.description())
             ));
         }
     }
