@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JooqLinkService implements LinkService {
@@ -28,21 +29,25 @@ public class JooqLinkService implements LinkService {
     }
 
     @Override
+    @Transactional
     public List<Link> findAll(OffsetDateTime criteria) {
         return linkRepository.findAll(criteria);
     }
 
     @Override
+    @Transactional
     public List<Link> getLinks(Long chatId) {
         return linkRepository.findLinks(chatId);
     }
 
     @Override
+    @Transactional
     public List<ChatResponse> getChats(Long linkId) {
         return linkRepository.findChats(linkId);
     }
 
     @Override
+    @Transactional
     public Link addLink(Long chatId, AddLinkRequest link) {
         String url = link.url().toString();
         if (!linkRepository.exist(url)) {
@@ -62,6 +67,7 @@ public class JooqLinkService implements LinkService {
     }
 
     @Override
+    @Transactional
     public Link deleteLink(Long chatId, RemoveLinkRequest link) {
         Link linkByUrl = getByUrl(link.url().toString());
         if (exist(chatId, linkByUrl.id())) {
@@ -76,16 +82,19 @@ public class JooqLinkService implements LinkService {
     }
 
     @Override
+    @Transactional
     public boolean exist(Long chatId, Long linkId) {
         return linkRepository.existLinkToChat(chatId, linkId);
     }
 
     @Override
+    @Transactional
     public Link getByUrl(String url) {
         return linkRepository.findByUrl(url).orElseThrow(() -> new NotFoundException("Ссылка с таким url не найдена"));
     }
 
     @Override
+    @Transactional
     public void updateLink(Long linkId, OffsetDateTime lastCheckTime, Integer hash) {
         linkRepository.updateLink(linkId, lastCheckTime, hash);
     }

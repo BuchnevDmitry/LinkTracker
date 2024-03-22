@@ -7,6 +7,7 @@ import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.service.ChatService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JooqChatService implements ChatService {
@@ -17,6 +18,7 @@ public class JooqChatService implements ChatService {
     }
 
     @Override
+    @Transactional
     public void register(Long id, AddChatRequest chat) {
         if (!exist(id)) {
             chatRepository.add(id, chat);
@@ -26,6 +28,7 @@ public class JooqChatService implements ChatService {
     }
 
     @Override
+    @Transactional
     public void unregister(Long id) {
         if (exist(id)) {
             chatRepository.remove(id);
@@ -35,6 +38,7 @@ public class JooqChatService implements ChatService {
     }
 
     @Override
+    @Transactional
     public boolean exist(Long id) {
         return chatRepository.exist(id);
     }
