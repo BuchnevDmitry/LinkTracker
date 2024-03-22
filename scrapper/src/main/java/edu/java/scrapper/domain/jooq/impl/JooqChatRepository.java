@@ -9,9 +9,11 @@ import java.util.List;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
 
 @Repository
+@Transactional
 public class JooqChatRepository implements ChatRepository {
 
     @Autowired
@@ -41,7 +43,7 @@ public class JooqChatRepository implements ChatRepository {
     }
 
     @Override
-    public boolean exist(Long chatId) {
+    public boolean exists(Long chatId) {
         return dslContext.selectCount()
             .from(CHAT)
             .where(CHAT.ID.eq(chatId))

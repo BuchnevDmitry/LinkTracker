@@ -70,7 +70,7 @@ public class StackOverflowHandlerTest {
         Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
         questionRequest.setSort("creation");
         Mockito.when(stackOverflowClient.fetchQuestionAnswer(questionRequest)).thenReturn(answerResponse);
-        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.exists(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = stackOverflowHandler.handle(url);
@@ -93,7 +93,7 @@ public class StackOverflowHandlerTest {
         Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
         Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
         questionRequest.setSort("creation");
-        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.exists(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = stackOverflowHandler.handle(url);
@@ -114,7 +114,7 @@ public class StackOverflowHandlerTest {
         QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
         Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
         Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
-        Mockito.when(linkRepository.exist(url)).thenReturn(false);
+        Mockito.when(linkRepository.exists(url)).thenReturn(false);
 
         HandlerData handlerData = stackOverflowHandler.handle(url);
         HandlerData handlerDataResult = new HandlerData(1, LinkStatus.NOT_EXIST, "ссылки не существует");

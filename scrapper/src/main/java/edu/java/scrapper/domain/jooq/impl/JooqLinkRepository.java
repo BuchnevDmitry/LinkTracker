@@ -10,11 +10,13 @@ import java.util.Optional;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
 import static edu.java.scrapper.domain.jooq.tables.ChatLink.CHAT_LINK;
 import static edu.java.scrapper.domain.jooq.tables.Link.LINK;
 
 @Repository
+@Transactional
 public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dslContext;
 
