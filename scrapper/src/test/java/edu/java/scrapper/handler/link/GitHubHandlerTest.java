@@ -3,7 +3,7 @@ package edu.java.scrapper.handler.link;
 import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.RepositoryRequest;
@@ -56,7 +56,7 @@ public class GitHubHandlerTest {
     }
 
     @Test
-    void handleUpdateExistTest() throws URISyntaxException {
+    void handleUpdateExistTest() {
         String username = "username";
         String repName = "repository";
         String url = String.format("https://github.com/%s/%s", username, repName);
@@ -67,11 +67,17 @@ public class GitHubHandlerTest {
         RepositoryEventResponse.Payload payload = Mockito.mock(RepositoryEventResponse.Payload.class);
         Mockito.when(payload.action()).thenReturn("opened");
         List<RepositoryEventResponse> events = List.of(new RepositoryEventResponse(linkId, "IssuesEvent", payload, time));
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), username, repositoryResponse.hashCode() - 1);
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy(username);
+        link.setHashInt(repositoryResponse.hashCode() - 1);
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
         Mockito.when(gitHubClient.fetchRepositoryEvent(repositoryRequest)).thenReturn(events);
-        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.exists(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = gitHubHandler.handle(url);
@@ -92,7 +98,7 @@ public class GitHubHandlerTest {
         RepositoryResponse repositoryResponse = new RepositoryResponse(linkId, username, time, time, time, 10L, 10);
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
-        Mockito.when(linkRepository.exist(url)).thenReturn(false);
+        Mockito.when(linkRepository.exists(url)).thenReturn(false);
 
         HandlerData handlerData = gitHubHandler.handle(url);
         HandlerData handlerDataResult = new HandlerData(repositoryResponse.hashCode(),LinkStatus.NOT_EXIST, "ссылки не существует");
@@ -102,7 +108,7 @@ public class GitHubHandlerTest {
     }
 
     @Test
-    void handleUpdateIsNotExist() throws URISyntaxException {
+    void handleUpdateIsNotExist() {
         String username = "username";
         String repName = "repository";
         String url = String.format("https://github.com/%s/%s", username, repName);
@@ -110,10 +116,16 @@ public class GitHubHandlerTest {
         OffsetDateTime time = OffsetDateTime.now();
         RepositoryRequest repositoryRequest = new RepositoryRequest(username, repName);
         RepositoryResponse repositoryResponse = new RepositoryResponse(linkId, username, time, time, time, 10L, 10);
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), username, repositoryResponse.hashCode());
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy(username);
+        link.setHashInt(repositoryResponse.hashCode());
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
-        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.exists(url)).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
 
         HandlerData handlerData = gitHubHandler.handle(url);

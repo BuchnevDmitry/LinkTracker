@@ -3,7 +3,7 @@ package edu.java.scrapper.handler.link;
 import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.QuestionRequest;
@@ -65,7 +65,13 @@ public class StackOverflowHandlerTest {
         QuestionRequest questionRequest = new QuestionRequest(num);
         QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
         AnswerResponse answerResponse = new AnswerResponse(List.of(new AnswerResponse.ItemResponse(time)));
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), "username", questionRequest.hashCode() - 1);
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy("username");
+        link.setHashInt(questionRequest.hashCode() - 1);
         Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
         Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
         questionRequest.setSort("creation");
@@ -89,7 +95,13 @@ public class StackOverflowHandlerTest {
 
         QuestionRequest questionRequest = new QuestionRequest(num);
         QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), "username", questionResponse.hashCode());
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy("username");
+        link.setHashInt(questionResponse.hashCode());
         Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
         Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
         questionRequest.setSort("creation");

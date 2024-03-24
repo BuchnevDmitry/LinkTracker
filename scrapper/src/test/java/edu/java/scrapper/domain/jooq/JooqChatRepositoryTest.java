@@ -1,8 +1,10 @@
-package edu.java.scrapper.domain;
+package edu.java.scrapper.domain.jooq;
 
 import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.domain.jdbc.JdbcChatRepository;
 import edu.java.scrapper.domain.jooq.impl.JooqChatRepository;
+import edu.java.scrapper.domain.jpa.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import org.junit.jupiter.api.Assertions;
@@ -18,17 +20,17 @@ import java.util.List;
 public class JooqChatRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private JooqChatRepository chatRepository;
+    private ChatRepository chatRepository;
 
     @Test
     @Transactional
     @Rollback
     void addChatTest() {
-        List<ChatResponse> chatResponsesBefore = chatRepository.findAll();
+        List<Chat> chatResponsesBefore = chatRepository.findAll();
         AddChatRequest chat = new AddChatRequest("name");
 
         Assertions.assertDoesNotThrow(() -> chatRepository.add(1L, chat));
-        List<ChatResponse> chatResponsesAfter = chatRepository.findAll();
+        List<Chat> chatResponsesAfter = chatRepository.findAll();
         Assertions.assertEquals(chatResponsesBefore.size() + 1, chatResponsesAfter.size());
 
     }
@@ -40,9 +42,9 @@ public class JooqChatRepositoryTest extends IntegrationTest {
         Long id = 1L;
         AddChatRequest chat = new AddChatRequest("name");
         chatRepository.add(id, chat);
-        List<ChatResponse> chatResponsesBefore = chatRepository.findAll();
+        List<Chat> chatResponsesBefore = chatRepository.findAll();
         chatRepository.remove(id);
-        List<ChatResponse> chatResponsesAfter = chatRepository.findAll();
+        List<Chat> chatResponsesAfter = chatRepository.findAll();
         Assertions.assertEquals(chatResponsesBefore.size(), chatResponsesAfter.size() + 1);
     }
 

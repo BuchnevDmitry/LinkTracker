@@ -1,6 +1,7 @@
 package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.domain.ChatRepository;
+import edu.java.scrapper.domain.jpa.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
@@ -18,9 +19,9 @@ public class JdbcChatRepository implements ChatRepository {
     }
 
     @Override
-    public List<ChatResponse> findAll() {
+    public List<Chat> findAll() {
         return jdbcClient.sql("SELECT id, created_at, created_by FROM chat")
-            .query(ChatResponse.class)
+            .query(Chat.class)
             .list();
     }
 
