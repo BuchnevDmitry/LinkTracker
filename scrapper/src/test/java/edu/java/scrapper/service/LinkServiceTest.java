@@ -1,9 +1,9 @@
-package edu.java.scrapper.service.jdbc;
+package edu.java.scrapper.service;
 
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
@@ -24,7 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class JdbcLinkServiceTest {
+public class LinkServiceTest {
     @InjectMocks
     private LinkServiceImpl linkService;
     @Mock

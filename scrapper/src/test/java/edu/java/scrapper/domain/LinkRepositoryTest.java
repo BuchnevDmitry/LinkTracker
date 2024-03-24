@@ -1,33 +1,30 @@
-package edu.java.scrapper.domain.jooq;
+package edu.java.scrapper.domain;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.domain.jooq.impl.JooqChatRepository;
-import edu.java.scrapper.domain.jooq.impl.JooqLinkRepository;
-import edu.java.scrapper.domain.jpa.model.Chat;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Chat;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
-public class JooqLinkRepositoryTest extends IntegrationTest {
-    @Autowired
-    private JooqLinkRepository linkRepository;
+public class LinkRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private JooqChatRepository chatRepository;
+    private LinkRepository linkRepository;
 
+    @Autowired
+    private ChatRepository chatRepository;
 
     @Test
     @Transactional
@@ -113,8 +110,6 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void updateLinkTest() throws URISyntaxException {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
@@ -127,8 +122,6 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
 
 
     @Test
-    @Transactional
-    @Rollback
     void findAllByCriteriaTest() throws URISyntaxException {
         AddLinkRequest link1 = new AddLinkRequest(new URI("url1"), "name1");
         AddLinkRequest link2 = new AddLinkRequest(new URI("url2"), "name2");
@@ -139,10 +132,10 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         Link linkByUrl2 = linkRepository.findByUrl(link2.url().toString()).get();
         Link linkByUrl3 = linkRepository.findByUrl(link3.url().toString()).get();
         OffsetDateTime time = OffsetDateTime.now();
-        linkRepository.updateLink(linkByUrl2.getId(), time.minusMinutes(2), 1);
-        linkRepository.updateLink(linkByUrl3.getId(), time.minusMinutes(2), 1);
-        List<Link> links = linkRepository.findAll(time.minusMinutes(1));
-        Assertions.assertEquals(2, links.size());
+        linkRepository.updateLink(linkByUrl2.getId(), time, 1);
+        linkRepository.updateLink(linkByUrl3.getId(), time, 1);
+        List<Link> links = linkRepository.findAll(linkByUrl2.getLastCheckTime());
+        Assertions.assertEquals(1, links.size());
     }
 
 

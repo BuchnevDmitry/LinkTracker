@@ -5,6 +5,7 @@ import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
 import edu.java.scrapper.model.response.ListLinksResponse;
+import edu.java.scrapper.service.LinkService;
 import edu.java.scrapper.service.impl.LinkServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public class LinkController {
 
-    private final LinkServiceImpl linkService;
+    private final LinkService linkService;
 
     private final LinkMapper linkMapper;
 

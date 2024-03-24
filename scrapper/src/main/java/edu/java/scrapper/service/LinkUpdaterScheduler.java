@@ -1,13 +1,12 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.client.BotClient;
-import edu.java.scrapper.domain.jpa.model.Chat;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Chat;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;

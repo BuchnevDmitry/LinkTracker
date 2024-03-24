@@ -1,11 +1,10 @@
 package edu.java.scrapper.domain.jpa;
 
 import edu.java.scrapper.domain.ChatRepository;
-import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JpaChatRepository extends JpaRepository<Chat, Long>, ChatRepository {
@@ -15,7 +14,7 @@ public interface JpaChatRepository extends JpaRepository<Chat, Long>, ChatReposi
         Chat chat = new Chat();
         chat.setId(id);
         chat.setCreatedBy(chatRequest.createdBy());
-        this.save(chat);
+        this.saveAndFlush(chat);
     }
 
     @Override

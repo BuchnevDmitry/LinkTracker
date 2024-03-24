@@ -6,7 +6,6 @@ import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.service.ChatService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

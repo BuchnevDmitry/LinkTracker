@@ -1,15 +1,12 @@
 package edu.java.scrapper.domain.jooq.impl;
 
 import edu.java.scrapper.domain.ChatRepository;
-//import edu.java.scrapper.domain.jooq.tables.Chat;
-import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
 
 @RequiredArgsConstructor

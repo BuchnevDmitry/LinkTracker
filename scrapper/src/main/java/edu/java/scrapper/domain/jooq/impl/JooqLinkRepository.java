@@ -1,18 +1,14 @@
 package edu.java.scrapper.domain.jooq.impl;
 
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.jpa.model.Chat;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Chat;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
 import static edu.java.scrapper.domain.jooq.tables.ChatLink.CHAT_LINK;
 import static edu.java.scrapper.domain.jooq.tables.Link.LINK;

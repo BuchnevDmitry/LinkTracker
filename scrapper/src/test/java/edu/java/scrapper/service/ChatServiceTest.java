@@ -1,9 +1,10 @@
-package edu.java.scrapper.service.jooq;
+package edu.java.scrapper.service;
 
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
-import edu.java.scrapper.domain.jooq.impl.JooqChatRepository;
+import edu.java.scrapper.domain.jdbc.JdbcChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
+import edu.java.scrapper.service.impl.ChatServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,13 +14,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class JooqChatServiceTest {
+public class ChatServiceTest {
 
     @InjectMocks
-    private JooqChatService chatService;
+    private ChatServiceImpl chatService;
 
     @Mock
-    private JooqChatRepository chatRepository;
+    private JdbcChatRepository chatRepository;
 
     @Test
     void addChatTest() {

@@ -1,7 +1,6 @@
 package edu.java.scrapper.api.mapper;
 
-import edu.java.scrapper.domain.jpa.model.Link;
-import edu.java.scrapper.model.request.LinkUpdateRequest;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.response.LinkResponse;
 import java.net.URI;
 import java.net.URISyntaxException;

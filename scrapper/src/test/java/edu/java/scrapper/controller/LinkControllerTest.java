@@ -2,7 +2,7 @@ package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.LinkController;
 import edu.java.scrapper.api.mapper.LinkMapper;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;

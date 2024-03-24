@@ -2,7 +2,7 @@ package edu.java.scrapper.handler.link;
 
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.QuestionRequest;
@@ -10,7 +10,6 @@ import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import edu.java.scrapper.service.ParseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,7 +22,7 @@ public class StackOverflowHandler extends HandlerLink {
 
     public StackOverflowHandler(
         StackOverflowClient stackOverflowClient, ParseService parseService,
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+        LinkRepository linkRepository
     ) {
         this.stackOverflowClient = stackOverflowClient;
         this.parseService = parseService;
