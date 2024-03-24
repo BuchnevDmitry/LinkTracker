@@ -1,4 +1,4 @@
-package edu.java.scrapper.service.jdbc;
+package edu.java.scrapper.service.impl;
 
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-public class JdbcChatService implements ChatService {
+public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
 
-    public JdbcChatService(@Qualifier("jdbcChatRepository") ChatRepository chatRepository) {
+    public ChatServiceImpl(ChatRepository chatRepository) {
         this.chatRepository = chatRepository;
     }
 

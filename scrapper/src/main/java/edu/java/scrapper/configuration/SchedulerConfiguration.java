@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SchedulerConfiguration {
     @Bean
     public LinkUpdaterScheduler linkUpdaterScheduler(
-        @Qualifier("jdbcLinkService") LinkService linkService,
+        @Qualifier("linkServiceImpl") LinkService linkService,
         HandlerLinkFacade handlerLinkFacade,
         BotClient botClient
     ) {

@@ -1,9 +1,8 @@
-package edu.java.scrapper.domain;
+package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.JdbcChatRepository;
-import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.response.ChatResponse;
@@ -46,7 +45,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(link, 1);
         Assertions.assertTrue(linkRepository.exist(link.url().toString()));
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.remove(linkFind.id());
+        linkRepository.remove(linkFind.getId());
         Assertions.assertFalse(linkRepository.exist(link.url().toString()));
     }
 
@@ -60,10 +59,10 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.id());
-        Assertions.assertTrue(linkRepository.existLinkToChat(id, linkFind.id()));
-        linkRepository.removeLinkToChat(id, linkFind.id());
-        Assertions.assertFalse(linkRepository.existLinkToChat(id, linkFind.id()));
+        linkRepository.addLinkToChat(id, linkFind.getId());
+        Assertions.assertTrue(linkRepository.existLinkToChat(id, linkFind.getId()));
+        linkRepository.removeLinkToChat(id, linkFind.getId());
+        Assertions.assertFalse(linkRepository.existLinkToChat(id, linkFind.getId()));
     }
 
     @Test
@@ -77,7 +76,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(link, 1);
         List<Link> linksBefore = linkRepository.findLinks(id);
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.id());
+        linkRepository.addLinkToChat(id, linkFind.getId());
         List<Link> linksAfter = linkRepository.findLinks(id);
         Assertions.assertEquals(linksAfter.size() , linksBefore.size() + 1);
     }
@@ -90,7 +89,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         Assertions.assertDoesNotThrow(() -> linkRepository.add(link, 1));
         Optional<Link> linkByUrlBefore = linkRepository.findByUrl(link.url().toString());
         Assertions.assertTrue(linkByUrlBefore.isPresent());
-        linkRepository.remove(linkByUrlBefore.get().id());
+        linkRepository.remove(linkByUrlBefore.get().getId());
         Optional<Link> linkByUrlAfter = linkRepository.findByUrl(link.url().toString());
         Assertions.assertFalse(linkByUrlAfter.isPresent());
     }
@@ -105,9 +104,9 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Optional<Link> linkByUrl = linkRepository.findByUrl(link.url().toString());
-        List<ChatResponse> chatsBefore = linkRepository.findChats(linkByUrl.get().id());
-        linkRepository.addLinkToChat(id, linkByUrl.get().id());
-        List<ChatResponse> chatsAfter = linkRepository.findChats(linkByUrl.get().id());
+        List<Chat> chatsBefore = linkRepository.findChats(linkByUrl.get().getId());
+        linkRepository.addLinkToChat(id, linkByUrl.get().getId());
+        List<Chat> chatsAfter = linkRepository.findChats(linkByUrl.get().getId());
         Assertions.assertEquals(chatsAfter.size() , chatsBefore.size() + 1);
     }
 
@@ -118,7 +117,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Link linkByUrlBefore = linkRepository.findByUrl(link.url().toString()).get();
-        linkRepository.updateLink(linkByUrlBefore.id(), OffsetDateTime.now(), 2);
+        linkRepository.updateLink(linkByUrlBefore.getId(), OffsetDateTime.now(), 2);
         Link linkByUrlAfter = linkRepository.findByUrl(link.url().toString()).get();
         boolean condition = linkByUrlAfter.equals(linkByUrlBefore);
         Assertions.assertFalse(condition);
@@ -138,8 +137,8 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         Link linkByUrl2 = linkRepository.findByUrl(link2.url().toString()).get();
         Link linkByUrl3 = linkRepository.findByUrl(link3.url().toString()).get();
         OffsetDateTime time = OffsetDateTime.now();
-        linkRepository.updateLink(linkByUrl2.id(), time.minusMinutes(2), 1);
-        linkRepository.updateLink(linkByUrl3.id(), time.minusMinutes(2), 1);
+        linkRepository.updateLink(linkByUrl2.getId(), time.minusMinutes(2), 1);
+        linkRepository.updateLink(linkByUrl3.getId(), time.minusMinutes(2), 1);
         List<Link> links = linkRepository.findAll(time.minusMinutes(1));
         Assertions.assertEquals(2, links.size());
     }
@@ -157,7 +156,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(link, 1);
         Link linkByUrl = linkRepository.findByUrl(link.url().toString()).get();
         Assertions.assertTrue(linkRepository.exist(url));
-        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(id, linkByUrl.id()));
-        Assertions.assertTrue(linkRepository.existLinkToChatByLinkId(linkByUrl.id()));
+        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(id, linkByUrl.getId()));
+        Assertions.assertTrue(linkRepository.existLinkToChatByLinkId(linkByUrl.getId()));
     }
 }

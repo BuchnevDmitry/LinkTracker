@@ -2,7 +2,7 @@ package edu.java.scrapper.handler.link;
 
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.QuestionRequest;
@@ -48,7 +48,7 @@ public class StackOverflowHandler extends HandlerLink {
         if (linkRepository.exist(url)) {
             questionRequest.setSort("creation");
             Link link = linkRepository.findByUrl(url).get();
-            if (!link.hashInt().equals(questionResponse.hashCode())) {
+            if (!link.getHashInt().equals(questionResponse.hashCode())) {
                 AnswerResponse answerResponse = stackOverflowClient.fetchQuestionAnswer(questionRequest);
                 String updateMessage = handleMessageUpdates(answerResponse, link);
                 if (!updateMessage.isEmpty()) {
@@ -75,7 +75,7 @@ public class StackOverflowHandler extends HandlerLink {
     private String handleMessageUpdates(AnswerResponse answerResponse, Link link) {
         StringBuilder updateMessageBuilder = new StringBuilder();
         for (AnswerResponse.ItemResponse item : answerResponse.items()) {
-            if (link.lastCheckTime().isBefore(item.creationDate())) {
+            if (link.getLastCheckTime().isBefore(item.creationDate())) {
                 updateMessageBuilder.append("появился новый ответ \uD83D\uDD14 \n");
             }
         }

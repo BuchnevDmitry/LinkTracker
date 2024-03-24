@@ -2,11 +2,11 @@ package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.LinkController;
 import edu.java.scrapper.api.mapper.LinkMapper;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.service.impl.LinkServiceImpl;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class LinkControllerTest {
     @Mock
     private LinkMapper linkMapper;
     @Mock
-    private JdbcLinkService linkService;
+    private LinkServiceImpl linkService;
 
     @InjectMocks
     private LinkController linkController;
@@ -63,7 +63,13 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         AddLinkRequest request = new AddLinkRequest(uri, "string");
 
-        Link link = new Link(1L, uri, null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl(uri.toString());
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setCreatedBy(null);
+        link.setHashInt(1);
         Mockito.when(linkService.addLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(post("/links/" + tgChatId)
@@ -84,7 +90,13 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         RemoveLinkRequest request = new RemoveLinkRequest(uri);
 
-        Link link = new Link(1L, uri, null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl(uri.toString());
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setCreatedBy(null);
+        link.setHashInt(1);
         Mockito.when(linkService.deleteLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(delete("/links/" + tgChatId)

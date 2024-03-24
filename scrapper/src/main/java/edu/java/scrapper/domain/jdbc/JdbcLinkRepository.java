@@ -1,9 +1,9 @@
 package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@Repository
 @SuppressWarnings("MultipleStringLiterals")
 public class JdbcLinkRepository implements LinkRepository {
     private final JdbcClient jdbcClient;
@@ -97,14 +96,14 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<ChatResponse> findChats(Long linkId) {
+    public List<Chat> findChats(Long linkId) {
         return jdbcClient.sql(
                 "SELECT id, created_at, created_by "
                     + "FROM chat_link "
                     + "JOIN chat ON chat_link.chat_id = chat.id "
                     + "WHERE chat_link.link_id = :linkId")
             .param("linkId", linkId)
-            .query(ChatResponse.class)
+            .query(Chat.class)
             .list();
     }
 

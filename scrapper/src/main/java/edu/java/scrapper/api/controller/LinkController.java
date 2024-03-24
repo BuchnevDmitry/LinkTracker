@@ -5,7 +5,7 @@ import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
 import edu.java.scrapper.model.response.ListLinksResponse;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.service.impl.LinkServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public class LinkController {
 
-    private final JdbcLinkService linkService;
+    private final LinkServiceImpl linkService;
 
     private final LinkMapper linkMapper;
 
-    public LinkController(JdbcLinkService linkService, LinkMapper linkMapper) {
+    public LinkController(LinkServiceImpl linkService, LinkMapper linkMapper) {
         this.linkService = linkService;
         this.linkMapper = linkMapper;
     }

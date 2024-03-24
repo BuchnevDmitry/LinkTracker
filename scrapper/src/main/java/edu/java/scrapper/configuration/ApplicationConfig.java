@@ -16,7 +16,9 @@ public record ApplicationConfig(
     String gitHubToken,
 
     @NotEmpty
-    String botUri
+    String botUri,
+
+    AccessType databaseAccessType
 
 ) {
 }

@@ -2,7 +2,7 @@ package edu.java.scrapper.handler.link;
 
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.RepositoryRequest;
@@ -50,7 +50,7 @@ public class GitHubHandler extends HandlerLink {
         if (linkRepository.exist(url)) {
             List<RepositoryEventResponse> eventResponses = gitHubClient.fetchRepositoryEvent(repositoryRequest);
             Link link = linkRepository.findByUrl(url).get();
-            if (!link.hashInt().equals(repositoryResponse.hashCode())) {
+            if (!link.getHashInt().equals(repositoryResponse.hashCode())) {
                 String updateMessage = handleMessageUpdates(eventResponses, link);
                 if (!updateMessage.isEmpty()) {
                     return new HandlerData(
@@ -76,7 +76,7 @@ public class GitHubHandler extends HandlerLink {
     private String handleMessageUpdates(List<RepositoryEventResponse> eventResponses, Link link) {
         StringBuilder updateMessageBuilder = new StringBuilder();
         for (RepositoryEventResponse response : eventResponses) {
-            if (link.lastCheckTime().isBefore(response.createdAt())) {
+            if (link.getLastCheckTime().isBefore(response.createdAt())) {
                 updateMessageBuilder.append(generateUpdateMessage(response));
             }
         }
