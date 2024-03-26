@@ -4,7 +4,6 @@ import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.model.request.AddChatRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -12,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ChatService {
 
-    @Qualifier("jdbcChatRepository") private final ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
+
+    public ChatService(@Qualifier("jdbcChatRepository") ChatRepository chatRepository) {
+        this.chatRepository = chatRepository;
+    }
 
     @Transactional
     public void register(Long id, AddChatRequest chat) {

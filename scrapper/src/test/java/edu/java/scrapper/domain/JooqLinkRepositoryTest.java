@@ -35,7 +35,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         String url = "url";
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         Assertions.assertDoesNotThrow(() -> linkRepository.add(link, 1));
-        Assertions.assertTrue(linkRepository.exist(url));
+        Assertions.assertTrue(linkRepository.exists(url));
     }
 
     @Test
@@ -44,10 +44,10 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     void removeLinkTest() throws URISyntaxException {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
-        Assertions.assertTrue(linkRepository.exist(link.url().toString()));
+        Assertions.assertTrue(linkRepository.exists(link.url().toString()));
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
         linkRepository.remove(linkFind.id());
-        Assertions.assertFalse(linkRepository.exist(link.url().toString()));
+        Assertions.assertFalse(linkRepository.exists(link.url().toString()));
     }
 
     @Test
@@ -61,9 +61,9 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(link, 1);
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
         linkRepository.addLinkToChat(id, linkFind.id());
-        Assertions.assertTrue(linkRepository.existLinkToChat(id, linkFind.id()));
+        Assertions.assertTrue(linkRepository.existsLinkToChat(id, linkFind.id()));
         linkRepository.removeLinkToChat(id, linkFind.id());
-        Assertions.assertFalse(linkRepository.existLinkToChat(id, linkFind.id()));
+        Assertions.assertFalse(linkRepository.existsLinkToChat(id, linkFind.id()));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         OffsetDateTime time = OffsetDateTime.now();
         linkRepository.updateLink(linkByUrl2.id(), time.minusMinutes(2), 1);
         linkRepository.updateLink(linkByUrl3.id(), time.minusMinutes(2), 1);
-        List<Link> links = linkRepository.findAll(time.minusMinutes(1));
+        List<Link> links = linkRepository.findAllByLastCheckTimeBefore(time.minusMinutes(1));
         Assertions.assertEquals(2, links.size());
     }
 
@@ -156,8 +156,8 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         AddLinkRequest link = new AddLinkRequest(new URI(url), "name");
         linkRepository.add(link, 1);
         Link linkByUrl = linkRepository.findByUrl(link.url().toString()).get();
-        Assertions.assertTrue(linkRepository.exist(url));
+        Assertions.assertTrue(linkRepository.exists(url));
         Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(id, linkByUrl.id()));
-        Assertions.assertTrue(linkRepository.existLinkToChatByLinkId(linkByUrl.id()));
+        Assertions.assertTrue(linkRepository.existsLinkToChatByLinkId(linkByUrl.id()));
     }
 }

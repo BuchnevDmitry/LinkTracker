@@ -26,9 +26,9 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<Link> findAll(OffsetDateTime criteria) {
+    public List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time) {
         return dslContext.selectFrom(LINK)
-            .where(LINK.LAST_CHECK_TIME.lessThan(criteria))
+            .where(LINK.LAST_CHECK_TIME.lessThan(time))
             .fetchInto(Link.class);
     }
 
@@ -58,7 +58,7 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public boolean exist(String url) {
+    public boolean exists(String url) {
         return dslContext.selectCount()
             .from(LINK)
             .where(LINK.URL.eq(url))
@@ -66,7 +66,7 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public boolean existLinkToChatByLinkId(Long linkId) {
+    public boolean existsLinkToChatByLinkId(Long linkId) {
         return dslContext.selectCount()
             .from(CHAT_LINK)
             .where(CHAT_LINK.LINK_ID.eq(linkId))
@@ -107,7 +107,7 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public boolean existLinkToChat(Long chatId, Long linkId) {
+    public boolean existsLinkToChat(Long chatId, Long linkId) {
         return dslContext.selectCount()
             .from(CHAT_LINK)
             .where(CHAT_LINK.CHAT_ID.eq(chatId).and(CHAT_LINK.LINK_ID.eq(linkId)))

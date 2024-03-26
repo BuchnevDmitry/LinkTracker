@@ -11,18 +11,21 @@ import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class LinkService {
 
     private final HandlerLinkFacade handlerLinkFacade;
 
-    @Qualifier("jdbcLinkRepository") private final LinkRepository linkRepository;
+    private final LinkRepository linkRepository;
+
+    public LinkService(HandlerLinkFacade handlerLinkFacade, @Qualifier("jdbcLinkRepository") LinkRepository linkRepository) {
+        this.handlerLinkFacade = handlerLinkFacade;
+        this.linkRepository = linkRepository;
+    }
 
     public List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time) {
         return linkRepository.findAllByLastCheckTimeBefore(time);
