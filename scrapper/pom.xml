@@ -11,7 +11,9 @@
 
     <artifactId>scrapper</artifactId>
     <version>${revision}</version>
-
+    <properties>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+    </properties>
     <dependencies>
         <!-- Web -->
         <dependency>
@@ -187,7 +189,7 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>1.5.5.Final</version>
+                            <version>${mapstruct.version}</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>

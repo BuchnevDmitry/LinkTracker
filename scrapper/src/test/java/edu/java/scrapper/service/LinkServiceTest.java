@@ -8,7 +8,6 @@ import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +22,9 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 
-public class JdbcLinkServiceTest {
+public class LinkServiceTest {
     @InjectMocks
-    private JdbcLinkService linkService;
+    private LinkService linkService;
     @Mock
     private JdbcLinkRepository linkRepository;
     @Mock
@@ -36,7 +35,7 @@ public class JdbcLinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
-        Mockito.when(linkRepository.exist(link.url().toString())).thenReturn(false);
+        Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(false);
         Mockito.when(handlerLinkFacade.getChainHead()).thenReturn(Mockito.mock(HandlerLink.class));
         Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(1000);
         Mockito.doNothing().when(linkRepository).add(link, 1000);
@@ -52,9 +51,9 @@ public class JdbcLinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
-        Mockito.when(linkRepository.exist(link.url().toString())).thenReturn(true);
+        Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(true);
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
-        Mockito.when(linkRepository.existLinkToChat(chatId, linkResult.id())).thenReturn(false);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(false);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
         Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.id());
         Link linkReturnService = linkService.addLink(chatId, link);
@@ -66,9 +65,9 @@ public class JdbcLinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
-        Mockito.when(linkRepository.exist(link.url().toString())).thenReturn(true);
+        Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(true);
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
-        Mockito.when(linkRepository.existLinkToChat(chatId, linkResult.id())).thenReturn(true);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
         Assertions.assertThrows(ResourceAlreadyExistsException.class, () -> linkService.addLink(chatId, link));
     }
@@ -80,7 +79,7 @@ public class JdbcLinkServiceTest {
         RemoveLinkRequest link = new RemoveLinkRequest(new URI(url));
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.when(linkRepository.existLinkToChat(chatId, linkResult.id())).thenReturn(true);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(true);
         Assertions.assertEquals(linkResult, linkService.deleteLink(chatId, link));
     }
 
@@ -91,7 +90,7 @@ public class JdbcLinkServiceTest {
         RemoveLinkRequest link = new RemoveLinkRequest(new URI(url));
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.when(linkRepository.existLinkToChat(chatId, linkResult.id())).thenReturn(false);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(false);
         Assertions.assertThrows(NotFoundException.class, () -> linkService.deleteLink(chatId, link));
     }
 

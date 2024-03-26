@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/updates")
+@RequiredArgsConstructor
 public class BotController {
 
     private final TelegramBot telegramBot;
-
-    public BotController(TelegramBot telegramBot) {
-        this.telegramBot = telegramBot;
-    }
 
     @Operation(summary = "Отправить обновление")
     @ApiResponses(value = {

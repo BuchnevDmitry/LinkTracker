@@ -81,7 +81,12 @@ public class ScrapperClient {
                 && (clientResponse.statusCode().is5xxServerError() || clientResponse.statusCode().is4xxClientError())) {
                 return clientResponse.bodyToMono(ApiErrorResponse.class)
                     .flatMap(errorBody -> {
-                        log.error(errorBody.description());
+                        String method = clientResponse.request().getMethod().toString();
+                        String path = clientResponse.request().getURI().getPath();
+                        log.error(String.format("При выполнении операции {%s} {%s} возникла ошибка: {%s}",
+                            method,
+                            path,
+                            errorBody.description()));
                         return Mono.error(new ResponseException(errorBody.description()));
                     });
             }

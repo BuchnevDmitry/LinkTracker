@@ -4,10 +4,13 @@ import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.response.LinkResponse;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
-public abstract class LinkMapper {
-    public abstract LinkResponse mapToDto(Link item);
+@Mapper
+public interface LinkMapper {
+    LinkMapper INSTANCE = Mappers.getMapper(LinkMapper.class);
 
-    public abstract List<LinkResponse> mapToDto(List<Link> item);
+    LinkResponse mapToDto(Link item);
+
+    List<LinkResponse> mapToDto(List<Link> item);
 }

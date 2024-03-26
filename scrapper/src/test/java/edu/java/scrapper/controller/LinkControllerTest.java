@@ -1,12 +1,10 @@
 package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.LinkController;
-import edu.java.scrapper.api.mapper.LinkMapper;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
-import edu.java.scrapper.model.response.LinkResponse;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.service.LinkService;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LinkControllerTest {
 
     @Mock
-    private LinkMapper linkMapper;
-    @Mock
-    private JdbcLinkService linkService;
+    private LinkService linkService;
 
     @InjectMocks
     private LinkController linkController;
@@ -65,7 +61,6 @@ public class LinkControllerTest {
 
         Link link = new Link(1L, uri, null, null, null, 1);
         Mockito.when(linkService.addLink(tgChatId, request)).thenReturn(link);
-        Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(post("/links/" + tgChatId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -86,7 +81,6 @@ public class LinkControllerTest {
 
         Link link = new Link(1L, uri, null, null, null, 1);
         Mockito.when(linkService.deleteLink(tgChatId, request)).thenReturn(link);
-        Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(delete("/links/" + tgChatId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

@@ -1,7 +1,7 @@
 package edu.java.scrapper.api.controller;
 
 import edu.java.scrapper.model.request.AddChatRequest;
-import edu.java.scrapper.service.jdbc.JdbcChatService;
+import edu.java.scrapper.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tg-chat")
 public class ChatController {
-    private final JdbcChatService chatService;
+    private final ChatService chatService;
 
-    public ChatController(JdbcChatService chatService) {
+    public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
 

@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @Repository
 public class JdbcChatRepository implements ChatRepository {
     private final JdbcClient jdbcClient;
@@ -26,13 +25,20 @@ public class JdbcChatRepository implements ChatRepository {
     }
 
     @Override
+    @Transactional
     public void add(Long id, AddChatRequest chat) {
-        jdbcClient.sql("INSERT INTO chat(id, created_at, created_by) values(?,?,?)")
-            .params(List.of(id, OffsetDateTime.now(), chat.createdBy()))
+        jdbcClient.sql("""
+                INSERT INTO chat(id, created_at, created_by)
+                VALUES (:id, :createdAt, :createdBy)
+                """)
+            .param("id", id)
+            .param("createdAt", OffsetDateTime.now())
+            .param("createdBy", chat.createdBy())
             .update();
     }
 
     @Override
+    @Transactional
     public void remove(Long id) {
         jdbcClient.sql("delete from chat where id = :id")
             .param("id", id)
@@ -40,7 +46,7 @@ public class JdbcChatRepository implements ChatRepository {
     }
 
     @Override
-    public boolean exist(Long chatId) {
+    public boolean exists(Long chatId) {
         return jdbcClient.sql("SELECT EXISTS(SELECT id FROM chat WHERE id = :chatId)")
             .param("chatId", chatId)
             .query(Boolean.class)

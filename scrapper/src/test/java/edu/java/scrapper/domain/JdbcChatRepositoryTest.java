@@ -62,9 +62,9 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
         Long id = 1L;
         AddChatRequest chat = new AddChatRequest( "name");
         chatRepository.add(id, chat);
-        Assertions.assertTrue(chatRepository.exist(id));
+        Assertions.assertTrue(chatRepository.exists(id));
         chatRepository.remove(id);
-        Assertions.assertFalse(chatRepository.exist(id));
+        Assertions.assertFalse(chatRepository.exists(id));
     }
 
 }

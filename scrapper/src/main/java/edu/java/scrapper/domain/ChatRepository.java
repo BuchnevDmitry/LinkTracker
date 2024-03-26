@@ -11,5 +11,5 @@ public interface ChatRepository {
 
     void remove(Long id);
 
-    boolean exist(Long chatId);
+    boolean exists(Long chatId);
 }

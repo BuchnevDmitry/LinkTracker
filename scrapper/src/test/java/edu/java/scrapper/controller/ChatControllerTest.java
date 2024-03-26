@@ -2,7 +2,7 @@ package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.ChatController;
 import edu.java.scrapper.model.request.AddChatRequest;
-import edu.java.scrapper.service.jdbc.JdbcChatService;
+import edu.java.scrapper.service.ChatService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class ChatControllerTest {
     @Mock
-    private JdbcChatService chatService;
+    private ChatService chatService;
 
     @InjectMocks
     private ChatController chatController;

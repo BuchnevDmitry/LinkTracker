@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LinkRepository {
-    List<Link> findAll(OffsetDateTime criteria);
+    List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time);
 
     void add(AddLinkRequest link, Integer hash);
 
@@ -16,9 +16,9 @@ public interface LinkRepository {
 
     Optional<Link> findByUrl(String url);
 
-    boolean exist(String url);
+    boolean exists(String url);
 
-    boolean existLinkToChatByLinkId(Long linkId);
+    boolean existsLinkToChatByLinkId(Long linkId);
 
     void addLinkToChat(Long chatId, Long linkId);
 
@@ -28,7 +28,7 @@ public interface LinkRepository {
 
     List<ChatResponse> findChats(Long linkId);
 
-    boolean existLinkToChat(Long chatId, Long linkId);
+    boolean existsLinkToChat(Long chatId, Long linkId);
 
     void updateLink(Long linkId, OffsetDateTime lastCheckTime, Integer hash);
 }
