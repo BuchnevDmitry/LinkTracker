@@ -2,10 +2,22 @@ package edu.java.scrapper.handler.link;
 
 import edu.java.scrapper.api.exception.BadRequestException;
 import edu.java.scrapper.client.StackOverflowClient;
+import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.model.HandlerData;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.QuestionRequest;
+import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import edu.java.scrapper.service.ParseService;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,9 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 public class StackOverflowHandlerTest {
@@ -25,16 +35,15 @@ public class StackOverflowHandlerTest {
     @Mock
     private StackOverflowClient stackOverflowClient;
 
-    @Spy
+    @Mock
+    private LinkRepository linkRepository;
+
+    @Mock
     private ParseService parseService;
 
     @ParameterizedTest
     @MethodSource("provideUrlAndBooleanForHandle")
-    public void methodHandleTest(String url) {
-        QuestionRequest request = parseService.parseUrlToQuestionRequest(url);
-        QuestionResponse response = Mockito.mock(QuestionResponse.class);
-        Mockito.lenient().when(stackOverflowClient.fetchQuestion(request)).thenReturn(response);
-
+    public void handleExecuteExceptionTest(String url) {
         Assertions.assertThrows(BadRequestException.class, () -> stackOverflowHandler.handle(url));
 
     }
@@ -44,5 +53,73 @@ public class StackOverflowHandlerTest {
             Arguments.of("https://reegwgregw/questions/78128827/name"),
             Arguments.of("https://noname.com/questions/78128827/name")
         );
+    }
+
+    @Test
+    public void handleUpdateExistTest() throws URISyntaxException {
+        Long linkId = 1L;
+        String num = "3";
+        String url = String.format("https://stackoverflow.com/%s", 3);
+        OffsetDateTime time = OffsetDateTime.now();
+
+        QuestionRequest questionRequest = new QuestionRequest(num);
+        QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
+        AnswerResponse answerResponse = new AnswerResponse(List.of(new AnswerResponse.ItemResponse(time)));
+        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), "username", questionRequest.hashCode() - 1);
+        Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
+        Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
+        questionRequest.setSort("creation");
+        Mockito.when(stackOverflowClient.fetchQuestionAnswer(questionRequest)).thenReturn(answerResponse);
+        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
+
+        HandlerData handlerData = stackOverflowHandler.handle(url);
+        HandlerData handlerDataResult = new HandlerData(1, LinkStatus.UPDATE, "появился новый ответ \uD83D\uDD14 \n");
+
+        Assertions.assertEquals(handlerDataResult.description(), handlerData.description());
+        Assertions.assertEquals(handlerDataResult.typeUpdate(), handlerData.typeUpdate());
+    }
+
+    @Test
+    public void handleUpdateIsNotExistTest() throws URISyntaxException {
+        Long linkId = 1L;
+        String num = "3";
+        String url = String.format("https://stackoverflow.com/%s", 3);
+        OffsetDateTime time = OffsetDateTime.now();
+
+        QuestionRequest questionRequest = new QuestionRequest(num);
+        QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
+        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), "username", questionResponse.hashCode());
+        Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
+        Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
+        questionRequest.setSort("creation");
+        Mockito.when(linkRepository.exist(url)).thenReturn(true);
+        Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(link));
+
+        HandlerData handlerData = stackOverflowHandler.handle(url);
+        HandlerData handlerDataResult = new HandlerData(1, LinkStatus.NOT_UPDATE, "обновлений нет");
+
+        Assertions.assertEquals(handlerDataResult.description(), handlerData.description());
+        Assertions.assertEquals(handlerDataResult.typeUpdate(), handlerData.typeUpdate());
+    }
+
+    @Test
+    public void handleLinkIsNotExistTest() {
+        Long linkId = 1L;
+        String num = "3";
+        String url = String.format("https://stackoverflow.com/%s", 3);
+        OffsetDateTime time = OffsetDateTime.now();
+
+        QuestionRequest questionRequest = new QuestionRequest(num);
+        QuestionResponse questionResponse = new QuestionResponse(List.of(new QuestionResponse.ItemResponse(linkId, 10, time, time)));
+        Mockito.when(parseService.parseUrlToQuestionRequest(url)).thenReturn(questionRequest);
+        Mockito.when(stackOverflowClient.fetchQuestion(questionRequest)).thenReturn(questionResponse);
+        Mockito.when(linkRepository.exist(url)).thenReturn(false);
+
+        HandlerData handlerData = stackOverflowHandler.handle(url);
+        HandlerData handlerDataResult = new HandlerData(1, LinkStatus.NOT_EXIST, "ссылки не существует");
+
+        Assertions.assertEquals(handlerDataResult.description(), handlerData.description());
+        Assertions.assertEquals(handlerDataResult.typeUpdate(), handlerData.typeUpdate());
     }
 }

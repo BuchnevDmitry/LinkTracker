@@ -2,8 +2,6 @@ package edu.java.scrapper.domain.jooq.impl;
 
 import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.domain.jooq.tables.Chat;
-import edu.java.scrapper.domain.jooq.tables.ChatLink;
-import edu.java.scrapper.domain.jooq.tables.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
@@ -18,8 +16,6 @@ public class JooqChatRepository implements ChatRepository {
 
     @Autowired
     private DSLContext dslContext;
-    Link link = Link.LINK;
-    ChatLink chatLink = ChatLink.CHAT_LINK;
 
     @Override
     public List<ChatResponse> findAll() {
