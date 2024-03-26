@@ -22,7 +22,10 @@ public class LinkService {
 
     private final LinkRepository linkRepository;
 
-    public LinkService(HandlerLinkFacade handlerLinkFacade, @Qualifier("jdbcLinkRepository") LinkRepository linkRepository) {
+    public LinkService(
+        HandlerLinkFacade handlerLinkFacade,
+        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+    ) {
         this.handlerLinkFacade = handlerLinkFacade;
         this.linkRepository = linkRepository;
     }
