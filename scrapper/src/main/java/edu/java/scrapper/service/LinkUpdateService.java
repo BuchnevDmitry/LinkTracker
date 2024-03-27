@@ -3,6 +3,8 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
 import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
@@ -28,16 +30,16 @@ public class LinkUpdateService {
         OffsetDateTime time = now.minusMinutes(1);
         List<Link> linkList = linkService.findAllByLastCheckTimeBefore(time);
         for (Link link : linkList) {
-            Integer hash = handlerLinkFacade.getChainHead().handle(link.url().toString());
-            linkService.updateLink(link.id(), now, hash);
-            log.info(link.url() + "-> hash: " + hash);
-            List<ChatResponse> longList = linkService.getChats(link.id());
-            List<Long> chatIds = longList.stream().map(ChatResponse::id).toList();
-            if (!link.hashInt().equals(hash)) {
+            HandlerData handlerData = handlerLinkFacade.getChainHead().handle(link.url().toString());
+            linkService.updateLink(link.id(), now, handlerData.hash());
+            log.info(link.url() + "-> hash: " + handlerData.hash());
+            List<ChatResponse> chats = linkService.getChats(link.id());
+            List<Long> chatIds = chats.stream().map(ChatResponse::id).toList();
+            if (handlerData.typeUpdate().equals(LinkStatus.UPDATE)) {
                 botClient.addUpdate(new LinkUpdateRequest(
                     link.id(),
                     link.url(),
-                    "появилось новое обновление",
+                    handlerData.description(),
                     chatIds
                 ));
             }
