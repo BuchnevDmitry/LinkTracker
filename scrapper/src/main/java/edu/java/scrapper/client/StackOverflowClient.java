@@ -13,7 +13,7 @@ public class StackOverflowClient {
 
     public StackOverflowClient(
         WebClient.Builder webClientBuilder,
-        @Value("${app.link.stack-overflow}")
+        @Value("${app.url.stack-overflow}")
         String baseUrl
     ) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();

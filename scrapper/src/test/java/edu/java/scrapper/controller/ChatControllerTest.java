@@ -1,38 +1,23 @@
 package edu.java.scrapper.controller;
 
 import edu.java.scrapper.api.controller.ChatController;
+import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.service.ChatService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatControllerTest {
-
     @Mock
     private ChatService chatService;
 
@@ -41,18 +26,25 @@ public class ChatControllerTest {
 
     private MockMvc mockMvc;
 
-
     @Test
     public void testRegisterChat() throws Exception {
-        Long chatId = 123L;
+        Long id = 123L;
+        AddChatRequest chat = new AddChatRequest("name");
 
-        chatController.registerChat(chatId);
+        chatController.registerChat(id, chat);
 
-        verify(chatService).registerChat(chatId);
+        verify(chatService).register(id, chat);
+        Mockito.doNothing().when(chatService).register(id, chat);
 
         mockMvc = MockMvcBuilders.standaloneSetup(chatController).build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/tg-chat/" + chatId))
+        mockMvc.perform(MockMvcRequestBuilders.post("/tg-chat/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                    "createdBy":"name"
+                    }
+                    """))
             .andExpect(status().isOk());
     }
 
@@ -62,7 +54,7 @@ public class ChatControllerTest {
 
         chatController.deleteChat(chatId);
 
-        verify(chatService).deleteChat(chatId);
+        verify(chatService).unregister(chatId);
 
         mockMvc = MockMvcBuilders.standaloneSetup(chatController).build();
 

@@ -1,5 +1,6 @@
 package edu.java.scrapper.api.controller;
 
+import edu.java.scrapper.api.mapper.LinkMapper;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import edu.java.scrapper.model.response.LinkResponse;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/links")
+@RequiredArgsConstructor
 public class LinkController {
 
     private final LinkService linkService;
 
-    public LinkController(LinkService linkService) {
-        this.linkService = linkService;
-    }
+    private final LinkMapper linkMapper;
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @ApiResponses(value = {
@@ -38,7 +40,8 @@ public class LinkController {
     @GetMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
     ListLinksResponse getLinks(@PathVariable Long tgChatId) {
-        return linkService.getLinks(tgChatId);
+        List<LinkResponse> linkResponses = linkMapper.mapToDto(linkService.getLinks(tgChatId));
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
@@ -53,7 +56,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        return linkService.addLink(tgChatId, request.link());
+        return linkMapper.mapToDto(linkService.addLink(tgChatId, request));
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -68,7 +71,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest request
     ) {
-        return linkService.deleteLink(tgChatId, request.link());
+        return linkMapper.mapToDto(linkService.deleteLink(tgChatId, request));
     }
 
 }

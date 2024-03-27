@@ -41,7 +41,7 @@ public class TrackCommand implements Command {
             log.info("Вот такой url " + url);
             LinkResponse link = scrapperClient.addLink(
                 update.message().chat().id(),
-                new AddLinkRequest(new URI(url))
+                new AddLinkRequest(new URI(url), update.message().from().username())
             );
             String stringLog = String.format("Отслеживание id: %d url: %s", link.id(), link.url());
             log.info(stringLog);
