@@ -1,9 +1,9 @@
 package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -93,22 +93,22 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     @Transactional
-    public void addLinkToChat(Long chatId, Long linkId) {
+    public void addLinkToChat(Chat chat, Link link) {
         jdbcClient.sql("""
                 INSERT INTO chat_link(chat_id, link_id)
                 VALUES(:chatId, :linkId)
                 """)
-            .param(CHAT_ID, chatId)
-            .param(LINK_ID, linkId)
+            .param(CHAT_ID, chat.getId())
+            .param(LINK_ID, link.getId())
             .update();
     }
 
     @Override
     @Transactional
-    public void removeLinkToChat(Long chatId, Long linkId) {
+    public void removeLinkToChat(Chat chat, Link link) {
         jdbcClient.sql("DELETE FROM chat_link where chat_id = :chatId and link_id = :linkId")
-            .param(CHAT_ID, chatId)
-            .param(LINK_ID, linkId)
+            .param(CHAT_ID, chat.getId())
+            .param(LINK_ID, link.getId())
             .update();
     }
 
@@ -126,7 +126,7 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<ChatResponse> findChats(Long linkId) {
+    public List<Chat> findChats(Long linkId) {
         return jdbcClient.sql("""
                 SELECT id, created_at, created_by
                 FROM chat_link
@@ -134,7 +134,7 @@ public class JdbcLinkRepository implements LinkRepository {
                 WHERE chat_link.link_id = :linkId
                 """)
             .param(LINK_ID, linkId)
-            .query(ChatResponse.class)
+            .query(Chat.class)
             .list();
     }
 

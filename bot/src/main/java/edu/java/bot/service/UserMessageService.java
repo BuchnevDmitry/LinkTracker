@@ -27,8 +27,9 @@ public class UserMessageService {
             log.info(String.format("%s %s", COMMAND_NOT_FOUND, e.getMessage()));
             return new SendMessage(update.message().chat().id(), COMMAND_NOT_FOUND).parseMode(ParseMode.HTML);
         } catch (ResponseException e) {
-            log.info("Ошибка запроса -> " + e.getMessage());
-            return new SendMessage(update.message().chat().id(), "Ошибка выполнения запроса");
+            String message = "Ошибка выполнения запроса -> " + e.getMessage();
+            log.info(message);
+            return new SendMessage(update.message().chat().id(), message);
         }
     }
 }

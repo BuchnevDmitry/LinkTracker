@@ -10,7 +10,6 @@ import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import edu.java.scrapper.service.ParseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,7 +22,7 @@ public class StackOverflowHandler extends HandlerLink {
 
     public StackOverflowHandler(
         StackOverflowClient stackOverflowClient, ParseService parseService,
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+        LinkRepository linkRepository
     ) {
         this.stackOverflowClient = stackOverflowClient;
         this.parseService = parseService;
@@ -48,7 +47,7 @@ public class StackOverflowHandler extends HandlerLink {
         if (linkRepository.exists(url)) {
             questionRequest.setSort("creation");
             Link link = linkRepository.findByUrl(url).get();
-            if (!link.hashInt().equals(questionResponse.hashCode())) {
+            if (!link.getHashInt().equals(questionResponse.hashCode())) {
                 AnswerResponse answerResponse = stackOverflowClient.fetchQuestionAnswer(questionRequest);
                 String updateMessage = handleMessageUpdates(answerResponse, link);
                 if (!updateMessage.isEmpty()) {
@@ -75,7 +74,7 @@ public class StackOverflowHandler extends HandlerLink {
     private String handleMessageUpdates(AnswerResponse answerResponse, Link link) {
         StringBuilder updateMessageBuilder = new StringBuilder();
         for (AnswerResponse.ItemResponse item : answerResponse.items()) {
-            if (link.lastCheckTime().isBefore(item.creationDate())) {
+            if (link.getLastCheckTime().isBefore(item.creationDate())) {
                 updateMessageBuilder.append("появился новый ответ \uD83D\uDD14 \n");
             }
         }

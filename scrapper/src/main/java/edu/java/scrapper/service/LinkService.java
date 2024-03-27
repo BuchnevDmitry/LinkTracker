@@ -3,15 +3,14 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +19,15 @@ public class LinkService {
 
     private final HandlerLinkFacade handlerLinkFacade;
 
+    private final ChatService chatService;
+
     private final LinkRepository linkRepository;
 
     public LinkService(
-        HandlerLinkFacade handlerLinkFacade,
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+        HandlerLinkFacade handlerLinkFacade, ChatService chatService, LinkRepository linkRepository
     ) {
         this.handlerLinkFacade = handlerLinkFacade;
+        this.chatService = chatService;
         this.linkRepository = linkRepository;
     }
 
@@ -38,23 +39,24 @@ public class LinkService {
         return linkRepository.findLinks(chatId);
     }
 
-    public List<ChatResponse> getChats(Long linkId) {
+    public List<Chat> getChats(Long linkId) {
         return linkRepository.findChats(linkId);
     }
 
     @Transactional
     public Link addLink(Long chatId, AddLinkRequest link) {
         String url = link.url().toString();
+        Chat chat = chatService.getChat(chatId);
         if (!linkRepository.exists(url)) {
             HandlerData handlerData = handlerLinkFacade.getChainHead().handle(url);
             linkRepository.add(link, handlerData.hash());
             Link linkByUrl = getByUrl(url);
-            linkRepository.addLinkToChat(chatId, linkByUrl.id());
+            linkRepository.addLinkToChat(chat, linkByUrl);
             return linkByUrl;
         } else {
             Link linkByUrl = getByUrl(url);
-            if (!exists(chatId, linkByUrl.id())) {
-                linkRepository.addLinkToChat(chatId, linkByUrl.id());
+            if (!exists(chatId, linkByUrl.getId())) {
+                linkRepository.addLinkToChat(chat, linkByUrl);
                 return linkByUrl;
             }
             throw new ResourceAlreadyExistsException("Ссылка уже добавлена");
@@ -64,10 +66,11 @@ public class LinkService {
     @Transactional
     public Link deleteLink(Long chatId, RemoveLinkRequest link) {
         Link linkByUrl = getByUrl(link.url().toString());
-        if (exists(chatId, linkByUrl.id())) {
-            linkRepository.removeLinkToChat(chatId, linkByUrl.id());
-            if (!linkRepository.existsLinkToChatByLinkId(linkByUrl.id())) {
-                linkRepository.remove(linkByUrl.id());
+        Chat chat = chatService.getChat(chatId);
+        if (exists(chatId, linkByUrl.getId())) {
+            linkRepository.removeLinkToChat(chat, linkByUrl);
+            if (!linkRepository.existsLinkToChatByLinkId(linkByUrl.getId())) {
+                linkRepository.remove(linkByUrl.getId());
             }
             return linkByUrl;
         } else {

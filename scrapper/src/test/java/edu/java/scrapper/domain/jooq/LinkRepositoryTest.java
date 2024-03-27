@@ -1,32 +1,34 @@
-package edu.java.scrapper.domain;
+package edu.java.scrapper.domain.jooq;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.domain.jooq.impl.JooqChatRepository;
-import edu.java.scrapper.domain.jooq.impl.JooqLinkRepository;
+import edu.java.scrapper.domain.ChatRepository;
+import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.TestPropertySource;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
-public class JooqLinkRepositoryTest extends IntegrationTest {
-    @Autowired
-    private JooqLinkRepository linkRepository;
+@TestPropertySource(properties = {"spring.config.location=classpath:application-jooq-test.yml"})
+public class LinkRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private JooqChatRepository chatRepository;
+    private LinkRepository linkRepository;
 
+    @Autowired
+    private ChatRepository chatRepository;
 
     @Test
     @Transactional
@@ -46,7 +48,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(link, 1);
         Assertions.assertTrue(linkRepository.exists(link.url().toString()));
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.remove(linkFind.id());
+        linkRepository.remove(linkFind.getId());
         Assertions.assertFalse(linkRepository.exists(link.url().toString()));
     }
 
@@ -55,15 +57,16 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     @Rollback
     void linkToChatTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest("name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest("name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.id());
-        Assertions.assertTrue(linkRepository.existsLinkToChat(id, linkFind.id()));
-        linkRepository.removeLinkToChat(id, linkFind.id());
-        Assertions.assertFalse(linkRepository.existsLinkToChat(id, linkFind.id()));
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkFind);
+        Assertions.assertTrue(linkRepository.existsLinkToChat(id, linkFind.getId()));
+        linkRepository.removeLinkToChat(chat,linkFind);
+        Assertions.assertFalse(linkRepository.existsLinkToChat(id, linkFind.getId()));
     }
 
     @Test
@@ -71,13 +74,14 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     @Rollback
     void findLinksTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest( "name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         List<Link> linksBefore = linkRepository.findLinks(id);
         Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.id());
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkFind);
         List<Link> linksAfter = linkRepository.findLinks(id);
         Assertions.assertEquals(linksAfter.size() , linksBefore.size() + 1);
     }
@@ -90,7 +94,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         Assertions.assertDoesNotThrow(() -> linkRepository.add(link, 1));
         Optional<Link> linkByUrlBefore = linkRepository.findByUrl(link.url().toString());
         Assertions.assertTrue(linkByUrlBefore.isPresent());
-        linkRepository.remove(linkByUrlBefore.get().id());
+        linkRepository.remove(linkByUrlBefore.get().getId());
         Optional<Link> linkByUrlAfter = linkRepository.findByUrl(link.url().toString());
         Assertions.assertFalse(linkByUrlAfter.isPresent());
     }
@@ -100,28 +104,29 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     @Rollback
     void findChatsTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest( "name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Optional<Link> linkByUrl = linkRepository.findByUrl(link.url().toString());
-        List<ChatResponse> chatsBefore = linkRepository.findChats(linkByUrl.get().id());
-        linkRepository.addLinkToChat(id, linkByUrl.get().id());
-        List<ChatResponse> chatsAfter = linkRepository.findChats(linkByUrl.get().id());
+        List<Chat> chatsBefore = linkRepository.findChats(linkByUrl.get().getId());
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkByUrl.get());
+        List<Chat> chatsAfter = linkRepository.findChats(linkByUrl.get().getId());
         Assertions.assertEquals(chatsAfter.size() , chatsBefore.size() + 1);
     }
 
     @Test
-    @Transactional
     @Rollback
     void updateLinkTest() throws URISyntaxException {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Link linkByUrlBefore = linkRepository.findByUrl(link.url().toString()).get();
-        linkRepository.updateLink(linkByUrlBefore.id(), OffsetDateTime.now(), 2);
+        linkRepository.updateLink(linkByUrlBefore.getId(), OffsetDateTime.now(), 2);
         Link linkByUrlAfter = linkRepository.findByUrl(link.url().toString()).get();
         boolean condition = linkByUrlAfter.equals(linkByUrlBefore);
         Assertions.assertFalse(condition);
+        linkRepository.remove(linkByUrlAfter.getId());
     }
 
 
@@ -138,10 +143,10 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         Link linkByUrl2 = linkRepository.findByUrl(link2.url().toString()).get();
         Link linkByUrl3 = linkRepository.findByUrl(link3.url().toString()).get();
         OffsetDateTime time = OffsetDateTime.now();
-        linkRepository.updateLink(linkByUrl2.id(), time.minusMinutes(2), 1);
-        linkRepository.updateLink(linkByUrl3.id(), time.minusMinutes(2), 1);
-        List<Link> links = linkRepository.findAllByLastCheckTimeBefore(time.minusMinutes(1));
-        Assertions.assertEquals(2, links.size());
+        linkRepository.updateLink(linkByUrl2.getId(), time, 1);
+        linkRepository.updateLink(linkByUrl3.getId(), time, 1);
+        List<Link> links = linkRepository.findAllByLastCheckTimeBefore(time);
+        Assertions.assertEquals(1, links.size());
     }
 
 
@@ -151,13 +156,14 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     void linkExistTest() throws URISyntaxException {
         Long id = 1L;
         String url = "url";
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest( "name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI(url), "name");
         linkRepository.add(link, 1);
         Link linkByUrl = linkRepository.findByUrl(link.url().toString()).get();
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
         Assertions.assertTrue(linkRepository.exists(url));
-        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(id, linkByUrl.id()));
-        Assertions.assertTrue(linkRepository.existsLinkToChatByLinkId(linkByUrl.id()));
+        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(chat, linkByUrl));
+        Assertions.assertTrue(linkRepository.existsLinkToChatByLinkId(linkByUrl.getId()));
     }
 }

@@ -8,7 +8,7 @@ app:
     git-hub-token: ${GITHUB_TOKEN}
     stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
     bot-uri: "http://localhost:8090"
-  database-access-type: jpa
+  database-access-type: jdbc
 spring:
   main:
     allow-bean-definition-overriding: true

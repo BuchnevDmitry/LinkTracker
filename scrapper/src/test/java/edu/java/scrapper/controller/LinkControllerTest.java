@@ -47,7 +47,13 @@ public class LinkControllerTest {
     @Test
     public void testGetLinks() throws Exception {
         Long tgChatId = 123L;
-        Link link = new Link(1L, new URI("adasd"), null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl("adasd");
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setCreatedBy(null);
+        link.setHashInt(1);
         List<Link> links = List.of(link);
 
         when(linkService.getLinks(tgChatId)).thenReturn(links);
@@ -64,8 +70,13 @@ public class LinkControllerTest {
         String url = "https://github.com/user/rep";
         URI uri = new URI(url);
         AddLinkRequest request = new AddLinkRequest(uri, "string");
-
-        Link link = new Link(1L, uri, null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl(uri.toString());
+        link.setCreatedBy(null);
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setHashInt(1);
         Mockito.when(linkService.addLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(post("/links/" + tgChatId)
@@ -86,7 +97,13 @@ public class LinkControllerTest {
         URI uri = new URI(url);
         RemoveLinkRequest request = new RemoveLinkRequest(uri);
 
-        Link link = new Link(1L, uri, null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl(uri.toString());
+        link.setCreatedBy(null);
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setHashInt(1);
         Mockito.when(linkService.deleteLink(tgChatId, request)).thenReturn(link);
         Mockito.when(linkMapper.mapToDto(link)).thenReturn(new LinkResponse(1L, uri));
         mockMvc.perform(delete("/links/" + tgChatId)
