@@ -66,17 +66,17 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public void addLinkToChat(Long chatId, Long linkId) {
+    public void addLinkToChat(Chat chat, Link link) {
         dslContext.insertInto(CHAT_LINK)
-            .set(CHAT_LINK.CHAT_ID, chatId)
-            .set(CHAT_LINK.LINK_ID, linkId)
+            .set(CHAT_LINK.CHAT_ID, chat.getId())
+            .set(CHAT_LINK.LINK_ID, link.getId())
             .execute();
     }
 
     @Override
-    public void removeLinkToChat(Long chatId, Long linkId) {
+    public void removeLinkToChat(Chat chat, Link link) {
         dslContext.deleteFrom(CHAT_LINK)
-            .where(CHAT_LINK.CHAT_ID.eq(chatId).and(CHAT_LINK.LINK_ID.eq(linkId)))
+            .where(CHAT_LINK.CHAT_ID.eq(chat.getId()).and(CHAT_LINK.LINK_ID.eq(link.getId())))
             .execute();
     }
 

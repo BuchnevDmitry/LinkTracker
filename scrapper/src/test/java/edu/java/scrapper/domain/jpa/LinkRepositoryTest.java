@@ -7,6 +7,11 @@ import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.request.AddLinkRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 @TestPropertySource(properties = {"spring.config.location=classpath:application-jpa-test.yml"})
@@ -47,7 +47,8 @@ public class LinkRepositoryTest extends IntegrationTest {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Assertions.assertTrue(linkRepository.exists(link.url().toString()));
-        Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
+        Link linkFind = linkRepository.findByUrl(link.url().toString())
+            .orElseThrow(() -> new RuntimeException("В базе нет такого url"));
         linkRepository.remove(linkFind.getId());
         Assertions.assertFalse(linkRepository.exists(link.url().toString()));
     }
@@ -57,14 +58,16 @@ public class LinkRepositoryTest extends IntegrationTest {
     @Rollback
     void linkToChatTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest("name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest("name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
-        Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.getId());
+        Link linkFind = linkRepository.findByUrl(link.url().toString())
+            .orElseThrow(() -> new RuntimeException("В базе нет такого url"));
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkFind);
         Assertions.assertTrue(linkRepository.existsLinkToChat(id, linkFind.getId()));
-        linkRepository.removeLinkToChat(id, linkFind.getId());
+        linkRepository.removeLinkToChat(chat, linkFind);
         Assertions.assertFalse(linkRepository.existsLinkToChat(id, linkFind.getId()));
     }
 
@@ -73,15 +76,17 @@ public class LinkRepositoryTest extends IntegrationTest {
     @Rollback
     void findLinksTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest("name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         List<Link> linksBefore = linkRepository.findLinks(id);
-        Link linkFind = linkRepository.findByUrl(link.url().toString()).orElseThrow(() -> new RuntimeException("В базе нет такого url"));
-        linkRepository.addLinkToChat(id, linkFind.getId());
+        Link linkFind = linkRepository.findByUrl(link.url().toString())
+            .orElseThrow(() -> new RuntimeException("В базе нет такого url"));
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkFind);
         List<Link> linksAfter = linkRepository.findLinks(id);
-        Assertions.assertEquals(linksAfter.size() , linksBefore.size() + 1);
+        Assertions.assertEquals(linksAfter.size(), linksBefore.size() + 1);
     }
 
     @Test
@@ -102,15 +107,16 @@ public class LinkRepositoryTest extends IntegrationTest {
     @Rollback
     void findChatsTest() throws URISyntaxException {
         Long id = 1L;
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest("name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
         Optional<Link> linkByUrl = linkRepository.findByUrl(link.url().toString());
         List<Chat> chatsBefore = linkRepository.findChats(linkByUrl.get().getId());
-        linkRepository.addLinkToChat(id, linkByUrl.get().getId());
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
+        linkRepository.addLinkToChat(chat, linkByUrl.get());
         List<Chat> chatsAfter = linkRepository.findChats(linkByUrl.get().getId());
-        Assertions.assertEquals(chatsAfter.size() , chatsBefore.size() + 1);
+        Assertions.assertEquals(chatsAfter.size(), chatsBefore.size() + 1);
     }
 
     @Test
@@ -125,7 +131,6 @@ public class LinkRepositoryTest extends IntegrationTest {
         Assertions.assertFalse(condition);
         linkRepository.remove(linkByUrlAfter.getId());
     }
-
 
     @Test
     @Transactional
@@ -146,20 +151,20 @@ public class LinkRepositoryTest extends IntegrationTest {
         Assertions.assertEquals(1, links.size());
     }
 
-
     @Test
     @Transactional
     @Rollback
     void linkExistTest() throws URISyntaxException {
         Long id = 1L;
         String url = "url";
-        AddChatRequest chat = new AddChatRequest( "name");
-        chatRepository.add(id, chat);
+        AddChatRequest chatRequest = new AddChatRequest("name");
+        chatRepository.add(id, chatRequest);
         AddLinkRequest link = new AddLinkRequest(new URI(url), "name");
         linkRepository.add(link, 1);
         Link linkByUrl = linkRepository.findByUrl(link.url().toString()).get();
+        Chat chat = chatRepository.findChatById(id).orElseThrow();
         Assertions.assertTrue(linkRepository.exists(url));
-        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(id, linkByUrl.getId()));
+        Assertions.assertDoesNotThrow(() -> linkRepository.addLinkToChat(chat, linkByUrl));
         Assertions.assertTrue(linkRepository.existsLinkToChatByLinkId(linkByUrl.getId()));
     }
 }

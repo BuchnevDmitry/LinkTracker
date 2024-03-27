@@ -5,6 +5,7 @@ import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
@@ -43,5 +44,12 @@ public class JooqChatRepository implements ChatRepository {
             .from(CHAT)
             .where(CHAT.ID.eq(chatId))
             .fetchOne(0, int.class) > 0;
+    }
+
+    @Override
+    public Optional<Chat> findChatById(Long id) {
+        return dslContext.selectFrom(CHAT)
+            .where(CHAT.ID.eq(id))
+            .fetchOptionalInto(Chat.class);
     }
 }

@@ -8,13 +8,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkRepository {
+
     boolean existsByUrl(String url);
 
     @Override
@@ -48,14 +48,18 @@ public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkReposi
     boolean existsLinkToChatByLinkId(Long linkId);
 
     @Override
-    @Modifying
-    @Query(value = "INSERT INTO chat_link (chat_id, link_id) VALUES (:chatId, :linkId)", nativeQuery = true)
-    void addLinkToChat(Long chatId, Long linkId);
+    @Transactional
+    default void addLinkToChat(Chat chat, Link link) {
+        chat.getLinks().add(link);
+        link.getChats().add(chat);
+    }
 
     @Override
-    @Modifying
-    @Query(value = "DELETE FROM chat_link WHERE chat_id = :chatId AND link_id = :linkId", nativeQuery = true)
-    void removeLinkToChat(Long chatId, Long linkId);
+    @Transactional
+    default void removeLinkToChat(Chat chat, Link link) {
+        chat.getLinks().remove(link);
+        link.getChats().remove(chat);
+    }
 
     @Override
     @Query("""

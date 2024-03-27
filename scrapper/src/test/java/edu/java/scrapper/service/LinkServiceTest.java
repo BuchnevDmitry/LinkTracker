@@ -3,6 +3,7 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
@@ -29,6 +30,8 @@ public class LinkServiceTest {
     @Mock
     private LinkRepository linkRepository;
     @Mock
+    private ChatService chatService;
+    @Mock
     private HandlerLinkFacade handlerLinkFacade;
 
     @Test
@@ -48,8 +51,13 @@ public class LinkServiceTest {
         linkResult.setLastCheckTime(OffsetDateTime.now());
         linkResult.setCreatedBy("username");
         linkResult.setHashInt(1000);
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chat.setCreatedBy("username");
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.getId());
+        Mockito.when(chatService.getChat(chatId)).thenReturn(chat);
+        Mockito.doNothing().when(linkRepository).addLinkToChat(chat, linkResult);
         Link linkReturnService = linkService.addLink(chatId, link);
         Assertions.assertEquals(linkResult, linkReturnService);
     }
@@ -67,9 +75,14 @@ public class LinkServiceTest {
         linkResult.setLastCheckTime(OffsetDateTime.now());
         linkResult.setCreatedBy("username");
         linkResult.setHashInt(1000);
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chat.setCreatedBy("username");
         Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.getId())).thenReturn(false);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.getId());
+        Mockito.when(chatService.getChat(chatId)).thenReturn(chat);
+        Mockito.doNothing().when(linkRepository).addLinkToChat(chat, linkResult);
         Link linkReturnService = linkService.addLink(chatId, link);
         Assertions.assertEquals(linkResult, linkReturnService);
     }

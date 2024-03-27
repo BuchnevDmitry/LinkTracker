@@ -93,22 +93,22 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     @Transactional
-    public void addLinkToChat(Long chatId, Long linkId) {
+    public void addLinkToChat(Chat chat, Link link) {
         jdbcClient.sql("""
                 INSERT INTO chat_link(chat_id, link_id)
                 VALUES(:chatId, :linkId)
                 """)
-            .param(CHAT_ID, chatId)
-            .param(LINK_ID, linkId)
+            .param(CHAT_ID, chat.getId())
+            .param(LINK_ID, link.getId())
             .update();
     }
 
     @Override
     @Transactional
-    public void removeLinkToChat(Long chatId, Long linkId) {
+    public void removeLinkToChat(Chat chat, Link link) {
         jdbcClient.sql("DELETE FROM chat_link where chat_id = :chatId and link_id = :linkId")
-            .param(CHAT_ID, chatId)
-            .param(LINK_ID, linkId)
+            .param(CHAT_ID, chat.getId())
+            .param(LINK_ID, link.getId())
             .update();
     }
 

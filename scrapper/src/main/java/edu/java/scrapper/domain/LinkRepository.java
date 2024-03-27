@@ -20,9 +20,9 @@ public interface LinkRepository {
 
     boolean existsLinkToChatByLinkId(Long linkId);
 
-    void addLinkToChat(Long chatId, Long linkId);
+    void addLinkToChat(Chat chat, Link link);
 
-    void removeLinkToChat(Long chatId, Long linkId);
+    void removeLinkToChat(Chat chat, Link link);
 
     List<Link> findLinks(Long chatId);
 

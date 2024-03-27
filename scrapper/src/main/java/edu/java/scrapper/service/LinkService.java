@@ -19,13 +19,15 @@ public class LinkService {
 
     private final HandlerLinkFacade handlerLinkFacade;
 
+    private final ChatService chatService;
+
     private final LinkRepository linkRepository;
 
     public LinkService(
-        HandlerLinkFacade handlerLinkFacade,
-        LinkRepository linkRepository
+        HandlerLinkFacade handlerLinkFacade, ChatService chatService, LinkRepository linkRepository
     ) {
         this.handlerLinkFacade = handlerLinkFacade;
+        this.chatService = chatService;
         this.linkRepository = linkRepository;
     }
 
@@ -44,16 +46,17 @@ public class LinkService {
     @Transactional
     public Link addLink(Long chatId, AddLinkRequest link) {
         String url = link.url().toString();
+        Chat chat = chatService.getChat(chatId);
         if (!linkRepository.exists(url)) {
             HandlerData handlerData = handlerLinkFacade.getChainHead().handle(url);
             linkRepository.add(link, handlerData.hash());
             Link linkByUrl = getByUrl(url);
-            linkRepository.addLinkToChat(chatId, linkByUrl.getId());
+            linkRepository.addLinkToChat(chat, linkByUrl);
             return linkByUrl;
         } else {
             Link linkByUrl = getByUrl(url);
             if (!exists(chatId, linkByUrl.getId())) {
-                linkRepository.addLinkToChat(chatId, linkByUrl.getId());
+                linkRepository.addLinkToChat(chat, linkByUrl);
                 return linkByUrl;
             }
             throw new ResourceAlreadyExistsException("Ссылка уже добавлена");
@@ -63,8 +66,9 @@ public class LinkService {
     @Transactional
     public Link deleteLink(Long chatId, RemoveLinkRequest link) {
         Link linkByUrl = getByUrl(link.url().toString());
+        Chat chat = chatService.getChat(chatId);
         if (exists(chatId, linkByUrl.getId())) {
-            linkRepository.removeLinkToChat(chatId, linkByUrl.getId());
+            linkRepository.removeLinkToChat(chat, linkByUrl);
             if (!linkRepository.existsLinkToChatByLinkId(linkByUrl.getId())) {
                 linkRepository.remove(linkByUrl.getId());
             }
