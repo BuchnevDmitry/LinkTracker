@@ -47,7 +47,13 @@ public class LinkControllerTest {
     @Test
     public void testGetLinks() throws Exception {
         Long tgChatId = 123L;
-        Link link = new Link(1L, new URI("adasd"), null, null, null, 1);
+        Link link = new Link();
+        link.setId(1L);
+        link.setUrl("adasd");
+        link.setCreatedAt(null);
+        link.setLastCheckTime(null);
+        link.setCreatedBy(null);
+        link.setHashInt(1);
         List<Link> links = List.of(link);
 
         when(linkService.getLinks(tgChatId)).thenReturn(links);
