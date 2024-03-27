@@ -7,7 +7,6 @@ import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;

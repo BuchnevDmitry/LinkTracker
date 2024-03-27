@@ -3,15 +3,14 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.handler.link.HandlerLinkFacade;
-import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
+import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
