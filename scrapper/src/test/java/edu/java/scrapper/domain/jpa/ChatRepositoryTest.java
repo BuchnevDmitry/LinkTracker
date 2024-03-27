@@ -1,17 +1,20 @@
-package edu.java.scrapper.domain;
+package edu.java.scrapper.domain.jpa;
 
 import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @SpringBootTest
+@TestPropertySource(properties = {"spring.config.location=classpath:application-jpa-test.yml"})
 public class ChatRepositoryTest extends IntegrationTest {
 
     @Autowired

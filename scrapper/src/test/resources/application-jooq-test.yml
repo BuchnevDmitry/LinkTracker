@@ -1,0 +1,29 @@
+app:
+  scheduler:
+    enable: true
+    interval: PT10S
+    force-check-delay: PT10S
+  link:
+    git-hub-uri: "https://api.github.com/repos/"
+    git-hub-token: ${GITHUB_TOKEN}
+    stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
+    bot-uri: "http://localhost:8090"
+  database-access-type: jooq
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: scrapper
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${SCRAPPER_DB_NAME}
+    username: ${SCRAPPER_USERNAME}
+    password: ${SCRAPPER_PASSWORD}
+    driverClassName: org.postgresql.Driver
+  liquibase:
+    enabled: false
+
+server:
+  port: 8080
+
+logging:
+  config: classpath:log4j2-plain.xml

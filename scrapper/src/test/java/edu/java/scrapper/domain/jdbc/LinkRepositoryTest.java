@@ -1,23 +1,27 @@
-package edu.java.scrapper.domain;
+package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.domain.ChatRepository;
+import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@TestPropertySource(properties = {"spring.config.location=classpath:application-jdbc-test.yml"})
 public class LinkRepositoryTest extends IntegrationTest {
 
     @Autowired
@@ -110,6 +114,7 @@ public class LinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
+    @Rollback
     void updateLinkTest() throws URISyntaxException {
         AddLinkRequest link = new AddLinkRequest(new URI("url"), "name");
         linkRepository.add(link, 1);
@@ -118,10 +123,13 @@ public class LinkRepositoryTest extends IntegrationTest {
         Link linkByUrlAfter = linkRepository.findByUrl(link.url().toString()).get();
         boolean condition = linkByUrlAfter.equals(linkByUrlBefore);
         Assertions.assertFalse(condition);
+        linkRepository.remove(linkByUrlAfter.getId());
     }
 
 
     @Test
+    @Transactional
+    @Rollback
     void findAllByCriteriaTest() throws URISyntaxException {
         AddLinkRequest link1 = new AddLinkRequest(new URI("url1"), "name1");
         AddLinkRequest link2 = new AddLinkRequest(new URI("url2"), "name2");
