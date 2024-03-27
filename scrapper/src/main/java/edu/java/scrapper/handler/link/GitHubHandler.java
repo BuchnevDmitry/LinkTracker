@@ -2,7 +2,7 @@ package edu.java.scrapper.handler.link;
 
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.RepositoryRequest;
@@ -11,7 +11,6 @@ import edu.java.scrapper.model.response.RepositoryResponse;
 import edu.java.scrapper.service.ParseService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -25,7 +24,7 @@ public class GitHubHandler extends HandlerLink {
 
     public GitHubHandler(
         GitHubClient gitHubClient, ParseService parseService,
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+        LinkRepository linkRepository
     ) {
         this.gitHubClient = gitHubClient;
         this.parseService = parseService;
@@ -47,7 +46,7 @@ public class GitHubHandler extends HandlerLink {
         RepositoryRequest repositoryRequest,
         RepositoryResponse repositoryResponse
     ) {
-        if (linkRepository.exist(url)) {
+        if (linkRepository.exists(url)) {
             List<RepositoryEventResponse> eventResponses = gitHubClient.fetchRepositoryEvent(repositoryRequest);
             Link link = linkRepository.findByUrl(url).get();
             if (!link.getHashInt().equals(repositoryResponse.hashCode())) {

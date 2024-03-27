@@ -1,16 +1,17 @@
 package edu.java.scrapper.domain.jpa;
 
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.jpa.model.Chat;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Chat;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkRepository {
@@ -21,13 +22,14 @@ public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkReposi
     List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time);
 
     @Override
+    @Transactional
     default void add(AddLinkRequest linkRequest, Integer hash) {
         Link link = new Link();
         link.setUrl(linkRequest.url().toString());
         link.setCreatedBy(linkRequest.createdBy());
         link.setHashInt(hash);
-        this.save(link);
-    };
+        this.saveAndFlush(link);
+    }
 
     @Override
     default void remove(Long linkId) {
@@ -84,6 +86,7 @@ public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkReposi
     boolean existsLinkToChat(Long chatId, Long linkId);
 
     @Override
+    @Transactional
     default void updateLink(Long linkId, OffsetDateTime lastCheckTime, Integer hash) {
         Link linkById = findById(linkId).orElseThrow();
         Link link = new Link();
@@ -91,7 +94,7 @@ public interface JpaLinkRepository extends JpaRepository<Link, Long>, LinkReposi
         link.setUrl(linkById.getUrl());
         link.setCreatedBy(linkById.getCreatedBy());
         link.setHashInt(hash);
-        this.save(link);
+        this.saveAndFlush(link);
     }
 
 }

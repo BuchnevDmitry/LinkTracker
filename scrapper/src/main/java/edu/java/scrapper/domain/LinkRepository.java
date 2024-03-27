@@ -1,7 +1,7 @@
 package edu.java.scrapper.domain;
 
-import edu.java.scrapper.domain.jpa.model.Chat;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Chat;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import java.time.OffsetDateTime;
 import java.util.List;

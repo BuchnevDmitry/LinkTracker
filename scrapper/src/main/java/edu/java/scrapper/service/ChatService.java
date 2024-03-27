@@ -15,7 +15,7 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
 
-    public ChatService(@Qualifier("jdbcChatRepository") ChatRepository chatRepository) {
+    public ChatService(ChatRepository chatRepository) {
         this.chatRepository = chatRepository;
     }
 

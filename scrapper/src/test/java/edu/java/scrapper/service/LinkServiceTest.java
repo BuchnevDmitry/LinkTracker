@@ -3,7 +3,7 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
-import edu.java.scrapper.domain.jpa.model.Link;
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
 import edu.java.scrapper.model.HandlerData;
@@ -21,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @ExtendWith(MockitoExtension.class)
 public class LinkServiceTest {

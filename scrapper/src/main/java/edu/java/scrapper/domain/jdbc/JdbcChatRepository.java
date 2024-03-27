@@ -1,9 +1,8 @@
 package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.domain.ChatRepository;
-import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.jdbc.core.simple.JdbcClient;
