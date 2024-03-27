@@ -29,6 +29,8 @@ public class LinkController {
 
     private final LinkService linkService;
 
+    private final LinkMapper linkMapper;
+
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @ApiResponses(value = {
         @ApiResponse(
@@ -38,7 +40,7 @@ public class LinkController {
     @GetMapping("/{tgChatId}")
     @ResponseStatus(HttpStatus.OK)
     ListLinksResponse getLinks(@PathVariable Long tgChatId) {
-        List<LinkResponse> linkResponses = LinkMapper.INSTANCE.mapToDto(linkService.getLinks(tgChatId));
+        List<LinkResponse> linkResponses = linkMapper.mapToDto(linkService.getLinks(tgChatId));
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
@@ -54,7 +56,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        return LinkMapper.INSTANCE.mapToDto(linkService.addLink(tgChatId, request));
+        return linkMapper.mapToDto(linkService.addLink(tgChatId, request));
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -69,7 +71,7 @@ public class LinkController {
         @PathVariable Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest request
     ) {
-        return LinkMapper.INSTANCE.mapToDto(linkService.deleteLink(tgChatId, request));
+        return linkMapper.mapToDto(linkService.deleteLink(tgChatId, request));
     }
 
 }
