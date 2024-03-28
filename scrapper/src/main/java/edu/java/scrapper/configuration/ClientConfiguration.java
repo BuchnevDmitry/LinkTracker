@@ -11,7 +11,7 @@ public class ClientConfiguration {
 
     @Bean
     public GitHubClient gitHubClient(ApplicationConfig applicationConfig) {
-        return new GitHubClient(WebClient.builder(), applicationConfig.gitHubUri());
+        return new GitHubClient(WebClient.builder(), applicationConfig.gitHubUri(), applicationConfig.gitHubToken());
     }
 
     @Bean

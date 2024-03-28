@@ -2,12 +2,18 @@ package edu.java.scrapper.service;
 
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
-import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
+import edu.java.scrapper.model.HandlerData;
+import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.AddLinkRequest;
 import edu.java.scrapper.model.request.RemoveLinkRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,18 +21,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @ExtendWith(MockitoExtension.class)
-
 public class LinkServiceTest {
     @InjectMocks
     private LinkService linkService;
     @Mock
-    private JdbcLinkRepository linkRepository;
+    private LinkRepository linkRepository;
     @Mock
     private HandlerLinkFacade handlerLinkFacade;
 
@@ -35,10 +37,11 @@ public class LinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
+        HandlerData handlerData = new HandlerData(1000, LinkStatus.NOT_UPDATE, "desc");
         Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(false);
         Mockito.when(handlerLinkFacade.getChainHead()).thenReturn(Mockito.mock(HandlerLink.class));
-        Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(1000);
-        Mockito.doNothing().when(linkRepository).add(link, 1000);
+        Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(handlerData);
+        Mockito.doNothing().when(linkRepository).add(link, handlerData.hash());
         Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
         Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.id());
