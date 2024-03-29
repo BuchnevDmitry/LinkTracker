@@ -2,6 +2,7 @@ package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.request.QuestionRequest;
+import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import java.time.Instant;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -18,6 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+@SpringBootTest
 public class StackOverflowClientTest {
 
     @RegisterExtension
@@ -120,6 +123,20 @@ public class StackOverflowClientTest {
         AnswerResponse response = stackOverflowClient.fetchQuestionAnswer(request);
 
         Assertions.assertEquals(response.items().get(0).creationDate(), Instant.ofEpochSecond(Long.parseLong("1710738709")).atOffset(ZoneOffset.UTC));
+    }
+
+    @Test
+    void retryTest() {
+        String number = "10";
+        String order = "desc";
+        String sort = "creation";
+        String site = "stackoverflow";
+        String urlPart = String.format("order=%s&sort=%s&site=%s", order, sort, site);
+        stubFor(get(urlEqualTo(String.format("/%s/answers?%s", number, urlPart)))
+            .willReturn(aResponse()
+                    .withStatus(501)));
+        QuestionRequest request = new QuestionRequest(number, order, sort, site);
+        Assertions.assertThrows(RuntimeException.class, () -> stackOverflowClient.fetchQuestionAnswer(request));
     }
 
 }

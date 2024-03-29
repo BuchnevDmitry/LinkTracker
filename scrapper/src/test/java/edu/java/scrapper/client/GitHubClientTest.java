@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+@SpringBootTest
 public class GitHubClientTest {
 
     @RegisterExtension
@@ -107,5 +109,16 @@ public class GitHubClientTest {
         Assertions.assertEquals(response.type(), "IssuesEvent");
         Assertions.assertEquals(response.payload().action(), "opened" );
         Assertions.assertEquals(response.createdAt(), OffsetDateTime.parse("2024-03-17T14:33:12Z"));
+    }
+
+    @Test
+    void retryTest() {
+        String username = "BuchnevDmitry";
+        String repositoryName = "twitter";
+        stubFor(get(urlEqualTo(String.format("/%s/%s", username, repositoryName)))
+            .willReturn(aResponse()
+                .withStatus(500)));
+        RepositoryRequest request = new RepositoryRequest(username, repositoryName);
+        Assertions.assertThrows(RuntimeException.class, () -> gitHubClient.fetchRepository(request));
     }
 }
