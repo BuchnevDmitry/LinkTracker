@@ -68,7 +68,7 @@ public class StackOverflowClient {
                     """);
             })
             .bodyToMono(AnswerResponse.class)
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 4, List.of(InternalServerErrorException.class)))
+            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 }

@@ -44,7 +44,7 @@ public class GitHubClient {
                 throw new InternalServerErrorException("Ошибка сервера при запросе информации о репозитории");
             })
             .bodyToMono(RepositoryResponse.class)
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 6, List.of(InternalServerErrorException.class)))
+            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
