@@ -38,13 +38,13 @@ bucket4j:
   enabled: true
   filters:
     - cache-name: rate-limit-buckets
-      url: /tg-chat.*
+      url: .*
       strategy: first
-      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
+      http-response-body: "{ \"code\": 429, \"error\": \"Too Many Requests\", \"description\": \"You have exhausted your API Request Quota\" }"
       rate-limits:
         - cache-key: getRemoteAddr()
           bandwidths:
-            - capacity: 3
-              time: 2
-              unit: minutes
+            - capacity: 100
+              time: 1
+              unit: hours
 
