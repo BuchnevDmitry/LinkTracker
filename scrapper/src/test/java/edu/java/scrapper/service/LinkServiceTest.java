@@ -3,6 +3,7 @@ package edu.java.scrapper.service;
 import edu.java.scrapper.api.exception.NotFoundException;
 import edu.java.scrapper.api.exception.ResourceAlreadyExistsException;
 import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLink;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
@@ -21,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @ExtendWith(MockitoExtension.class)
 public class LinkServiceTest {
@@ -29,6 +29,8 @@ public class LinkServiceTest {
     private LinkService linkService;
     @Mock
     private LinkRepository linkRepository;
+    @Mock
+    private ChatService chatService;
     @Mock
     private HandlerLinkFacade handlerLinkFacade;
 
@@ -42,9 +44,20 @@ public class LinkServiceTest {
         Mockito.when(handlerLinkFacade.getChainHead()).thenReturn(Mockito.mock(HandlerLink.class));
         Mockito.when(handlerLinkFacade.getChainHead().handle(url)).thenReturn(handlerData);
         Mockito.doNothing().when(linkRepository).add(link, handlerData.hash());
-        Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
+        Link linkResult = new Link();
+        linkResult.setId(1L);
+        linkResult.setUrl(link.url().toString());
+        linkResult.setCreatedAt(OffsetDateTime.now());
+        linkResult.setLastCheckTime(OffsetDateTime.now());
+        linkResult.setCreatedBy("username");
+        linkResult.setHashInt(1000);
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chat.setCreatedBy("username");
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.id());
+        Mockito.when(chatService.getChat(chatId)).thenReturn(chat);
+        Mockito.doNothing().when(linkRepository).addLinkToChat(chat, linkResult);
         Link linkReturnService = linkService.addLink(chatId, link);
         Assertions.assertEquals(linkResult, linkReturnService);
     }
@@ -55,10 +68,21 @@ public class LinkServiceTest {
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
         Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(true);
-        Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
-        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(false);
+        Link linkResult = new Link();
+        linkResult.setId(1L);
+        linkResult.setUrl(link.url().toString());
+        linkResult.setCreatedAt(OffsetDateTime.now());
+        linkResult.setLastCheckTime(OffsetDateTime.now());
+        linkResult.setCreatedBy("username");
+        linkResult.setHashInt(1000);
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chat.setCreatedBy("username");
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.getId())).thenReturn(false);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.doNothing().when(linkRepository).addLinkToChat(chatId, linkResult.id());
+        Mockito.when(chatService.getChat(chatId)).thenReturn(chat);
+        Mockito.doNothing().when(linkRepository).addLinkToChat(chat, linkResult);
         Link linkReturnService = linkService.addLink(chatId, link);
         Assertions.assertEquals(linkResult, linkReturnService);
     }
@@ -69,8 +93,14 @@ public class LinkServiceTest {
         String url = "https://github.com/BuchnevDmitry/testRep";
         AddLinkRequest link = new AddLinkRequest(new URI(url), "username");
         Mockito.when(linkRepository.exists(link.url().toString())).thenReturn(true);
-        Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
-        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(true);
+        Link linkResult = new Link();
+        linkResult.setId(1L);
+        linkResult.setUrl(link.url().toString());
+        linkResult.setCreatedAt(OffsetDateTime.now());
+        linkResult.setLastCheckTime(OffsetDateTime.now());
+        linkResult.setCreatedBy("username");
+        linkResult.setHashInt(1000);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.getId())).thenReturn(true);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
         Assertions.assertThrows(ResourceAlreadyExistsException.class, () -> linkService.addLink(chatId, link));
     }
@@ -80,9 +110,15 @@ public class LinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         RemoveLinkRequest link = new RemoveLinkRequest(new URI(url));
-        Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
+        Link linkResult = new Link();
+        linkResult.setId(1L);
+        linkResult.setUrl(link.url().toString());
+        linkResult.setCreatedAt(OffsetDateTime.now());
+        linkResult.setLastCheckTime(OffsetDateTime.now());
+        linkResult.setCreatedBy("username");
+        linkResult.setHashInt(1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(true);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.getId())).thenReturn(true);
         Assertions.assertEquals(linkResult, linkService.deleteLink(chatId, link));
     }
 
@@ -91,9 +127,15 @@ public class LinkServiceTest {
         Long chatId = 123L;
         String url = "https://github.com/BuchnevDmitry/testRep";
         RemoveLinkRequest link = new RemoveLinkRequest(new URI(url));
-        Link linkResult = new Link(1L, link.url(), OffsetDateTime.now(), OffsetDateTime.now(), "username", 1000);
+        Link linkResult = new Link();
+        linkResult.setId(1L);
+        linkResult.setUrl(link.url().toString());
+        linkResult.setCreatedAt(OffsetDateTime.now());
+        linkResult.setLastCheckTime(OffsetDateTime.now());
+        linkResult.setCreatedBy("username");
+        linkResult.setHashInt(1000);
         Mockito.when(linkRepository.findByUrl(url)).thenReturn(Optional.of(linkResult));
-        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.id())).thenReturn(false);
+        Mockito.when(linkRepository.existsLinkToChat(chatId, linkResult.getId())).thenReturn(false);
         Assertions.assertThrows(NotFoundException.class, () -> linkService.deleteLink(chatId, link));
     }
 

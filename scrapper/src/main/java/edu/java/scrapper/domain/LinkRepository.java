@@ -1,8 +1,8 @@
 package edu.java.scrapper.domain;
 
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +20,13 @@ public interface LinkRepository {
 
     boolean existsLinkToChatByLinkId(Long linkId);
 
-    void addLinkToChat(Long chatId, Long linkId);
+    void addLinkToChat(Chat chat, Link link);
 
-    void removeLinkToChat(Long chatId, Long linkId);
+    void removeLinkToChat(Chat chat, Link link);
 
     List<Link> findLinks(Long chatId);
 
-    List<ChatResponse> findChats(Long linkId);
+    List<Chat> findChats(Long linkId);
 
     boolean existsLinkToChat(Long chatId, Long linkId);
 

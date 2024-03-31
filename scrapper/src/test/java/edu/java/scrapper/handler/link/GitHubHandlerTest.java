@@ -10,7 +10,6 @@ import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.RepositoryEventResponse;
 import edu.java.scrapper.model.response.RepositoryResponse;
 import edu.java.scrapper.service.ParseService;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -56,7 +55,7 @@ public class GitHubHandlerTest {
     }
 
     @Test
-    void handleUpdateExistTest() throws URISyntaxException {
+    void handleUpdateExistTest() {
         String username = "username";
         String repName = "repository";
         String url = String.format("https://github.com/%s/%s", username, repName);
@@ -67,7 +66,13 @@ public class GitHubHandlerTest {
         RepositoryEventResponse.Payload payload = Mockito.mock(RepositoryEventResponse.Payload.class);
         Mockito.when(payload.action()).thenReturn("opened");
         List<RepositoryEventResponse> events = List.of(new RepositoryEventResponse(linkId, "IssuesEvent", payload, time));
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), username, repositoryResponse.hashCode() - 1);
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy(username);
+        link.setHashInt(repositoryResponse.hashCode() - 1);
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
         Mockito.when(gitHubClient.fetchRepositoryEvent(repositoryRequest)).thenReturn(events);
@@ -102,7 +107,7 @@ public class GitHubHandlerTest {
     }
 
     @Test
-    void handleUpdateIsNotExist() throws URISyntaxException {
+    void handleUpdateIsNotExist() {
         String username = "username";
         String repName = "repository";
         String url = String.format("https://github.com/%s/%s", username, repName);
@@ -110,7 +115,13 @@ public class GitHubHandlerTest {
         OffsetDateTime time = OffsetDateTime.now();
         RepositoryRequest repositoryRequest = new RepositoryRequest(username, repName);
         RepositoryResponse repositoryResponse = new RepositoryResponse(linkId, username, time, time, time, 10L, 10);
-        Link link = new Link(linkId, new URI(url), time.minusMinutes(1), time.minusMinutes(1), username, repositoryResponse.hashCode());
+        Link link = new Link();
+        link.setId(linkId);
+        link.setUrl(url);
+        link.setCreatedAt(time.minusMinutes(1));
+        link.setLastCheckTime(time.minusMinutes(1));
+        link.setCreatedBy(username);
+        link.setHashInt(repositoryResponse.hashCode());
         Mockito.when(parseService.parseUrlToRepositoryRequest(url)).thenReturn(repositoryRequest);
         Mockito.when(gitHubClient.fetchRepository(repositoryRequest)).thenReturn(repositoryResponse);
         Mockito.when(linkRepository.exists(url)).thenReturn(true);
