@@ -1,29 +1,21 @@
 package edu.java.scrapper.domain.jooq.impl;
 
 import edu.java.scrapper.domain.LinkRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.model.request.AddLinkRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.tables.Chat.CHAT;
 import static edu.java.scrapper.domain.jooq.tables.ChatLink.CHAT_LINK;
 import static edu.java.scrapper.domain.jooq.tables.Link.LINK;
 
-@Repository
-@Transactional
+@RequiredArgsConstructor
 public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dslContext;
-
-    @Autowired
-    public JooqLinkRepository(DSLContext dslContext) {
-        this.dslContext = dslContext;
-    }
 
     @Override
     public List<Link> findAllByLastCheckTimeBefore(OffsetDateTime time) {
@@ -74,17 +66,17 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public void addLinkToChat(Long chatId, Long linkId) {
+    public void addLinkToChat(Chat chat, Link link) {
         dslContext.insertInto(CHAT_LINK)
-            .set(CHAT_LINK.CHAT_ID, chatId)
-            .set(CHAT_LINK.LINK_ID, linkId)
+            .set(CHAT_LINK.CHAT_ID, chat.getId())
+            .set(CHAT_LINK.LINK_ID, link.getId())
             .execute();
     }
 
     @Override
-    public void removeLinkToChat(Long chatId, Long linkId) {
+    public void removeLinkToChat(Chat chat, Link link) {
         dslContext.deleteFrom(CHAT_LINK)
-            .where(CHAT_LINK.CHAT_ID.eq(chatId).and(CHAT_LINK.LINK_ID.eq(linkId)))
+            .where(CHAT_LINK.CHAT_ID.eq(chat.getId()).and(CHAT_LINK.LINK_ID.eq(link.getId())))
             .execute();
     }
 
@@ -98,12 +90,12 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<ChatResponse> findChats(Long linkId) {
+    public List<Chat> findChats(Long linkId) {
         return dslContext.select(CHAT.fields())
             .from(CHAT_LINK)
             .join(CHAT).on(CHAT_LINK.CHAT_ID.eq(CHAT.ID))
             .where(CHAT_LINK.LINK_ID.eq(linkId))
-            .fetchInto(ChatResponse.class);
+            .fetchInto(Chat.class);
     }
 
     @Override

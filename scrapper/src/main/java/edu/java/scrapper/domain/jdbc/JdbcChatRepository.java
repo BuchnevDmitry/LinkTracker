@@ -1,10 +1,11 @@
 package edu.java.scrapper.domain.jdbc;
 
 import edu.java.scrapper.domain.ChatRepository;
+import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.model.request.AddChatRequest;
-import edu.java.scrapper.model.response.ChatResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +19,9 @@ public class JdbcChatRepository implements ChatRepository {
     }
 
     @Override
-    public List<ChatResponse> findAll() {
+    public List<Chat> findAll() {
         return jdbcClient.sql("SELECT id, created_at, created_by FROM chat")
-            .query(ChatResponse.class)
+            .query(Chat.class)
             .list();
     }
 
@@ -51,5 +52,13 @@ public class JdbcChatRepository implements ChatRepository {
             .param("chatId", chatId)
             .query(Boolean.class)
             .single();
+    }
+
+    @Override
+    public Optional<Chat> findChatById(Long id) {
+        return jdbcClient.sql("SELECT id, created_at, created_by FROM chat WHERE id = :id")
+            .param("id", id)
+            .query(Chat.class)
+            .optional();
     }
 }

@@ -11,7 +11,6 @@ import edu.java.scrapper.model.response.RepositoryResponse;
 import edu.java.scrapper.service.ParseService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -25,7 +24,7 @@ public class GitHubHandler extends HandlerLink {
 
     public GitHubHandler(
         GitHubClient gitHubClient, ParseService parseService,
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository
+        LinkRepository linkRepository
     ) {
         this.gitHubClient = gitHubClient;
         this.parseService = parseService;
@@ -50,7 +49,7 @@ public class GitHubHandler extends HandlerLink {
         if (linkRepository.exists(url)) {
             List<RepositoryEventResponse> eventResponses = gitHubClient.fetchRepositoryEvent(repositoryRequest);
             Link link = linkRepository.findByUrl(url).get();
-            if (!link.hashInt().equals(repositoryResponse.hashCode())) {
+            if (!link.getHashInt().equals(repositoryResponse.hashCode())) {
                 String updateMessage = handleMessageUpdates(eventResponses, link);
                 if (!updateMessage.isEmpty()) {
                     return new HandlerData(
@@ -76,7 +75,7 @@ public class GitHubHandler extends HandlerLink {
     private String handleMessageUpdates(List<RepositoryEventResponse> eventResponses, Link link) {
         StringBuilder updateMessageBuilder = new StringBuilder();
         for (RepositoryEventResponse response : eventResponses) {
-            if (link.lastCheckTime().isBefore(response.createdAt())) {
+            if (link.getLastCheckTime().isBefore(response.createdAt())) {
                 updateMessageBuilder.append(generateUpdateMessage(response));
             }
         }

@@ -17,6 +17,5 @@ public record ApplicationConfig(
 
     @NotEmpty
     String botUri
-
 ) {
 }
