@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.api.exception.NotFoundException;
 import edu.java.bot.client.ScrapperClient;
+import edu.java.bot.client.ScrapperClientTest;
 import edu.java.bot.command.impl.StartCommand;
 import edu.java.bot.model.request.AddChatRequest;
 import org.junit.jupiter.api.Assertions;

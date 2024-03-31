@@ -2,17 +2,14 @@ package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import edu.java.scrapper.model.request.QuestionRequest;
-import edu.java.scrapper.model.request.RepositoryRequest;
 import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -32,7 +29,6 @@ public class StackOverflowClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        System.out.println(baseUrl);
         stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl);
     }
 
