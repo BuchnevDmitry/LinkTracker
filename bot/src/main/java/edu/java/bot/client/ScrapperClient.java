@@ -24,14 +24,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SuppressWarnings("MagicNumber")
 public class ScrapperClient {
     private final WebClient webClient;
+
+    private final RetryPolicy retryPolicy;
     private final String tgChatPath = "tg-chat/{id}";
     private final String linkPath = "/links/{tgChatId}";
 
     public ScrapperClient(
         WebClient.Builder restClientBuilder,
-        @Value("${app.scrapper-uri}") String baseUrl
+        @Value("${app.scrapper-uri}") String baseUrl,
+        RetryPolicy retryPolicy
     ) {
         this.webClient = restClientBuilder.filter(errorHandlingFilter()).baseUrl(baseUrl).build();
+        this.retryPolicy = retryPolicy;
     }
 
     public void registerChat(Long id, AddChatRequest chatRequest) {
@@ -41,7 +45,7 @@ public class ScrapperClient {
             .body(Mono.just(chatRequest), AddChatRequest.class)
             .retrieve()
             .toBodilessEntity()
-            .retryWhen(RetryUtil.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -50,7 +54,7 @@ public class ScrapperClient {
             .uri(tgChatPath, id)
             .retrieve()
             .toBodilessEntity()
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -59,7 +63,7 @@ public class ScrapperClient {
             .uri(linkPath, tgChatId)
             .retrieve()
             .bodyToMono(ListLinksResponse.class)
-            .retryWhen(RetryUtil.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -70,7 +74,7 @@ public class ScrapperClient {
             .body(Mono.just(linkRequest), AddLinkRequest.class)
             .retrieve()
             .bodyToMono(LinkResponse.class)
-            .retryWhen(RetryUtil.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -80,7 +84,7 @@ public class ScrapperClient {
             .body(Mono.just(linkRequest), RemoveLinkRequest.class)
             .retrieve()
             .bodyToMono(LinkResponse.class)
-            .retryWhen(RetryUtil.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.constant(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 

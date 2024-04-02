@@ -21,13 +21,17 @@ public class GitHubClient {
 
     private final WebClient webClient;
 
+    private final RetryPolicy retryPolicy;
+
     public GitHubClient(
         WebClient.Builder webClientBuilder,
         @Value("${app.link.git-hub-uri}")
         String baseUrl,
         @Value("${app.link.git-hub-token}")
-        String token
+        String token,
+        RetryPolicy retryPolicy
     ) {
+        this.retryPolicy = retryPolicy;
         this.webClient = webClientBuilder.baseUrl(baseUrl)
             .defaultHeader("Authorization", "Bearer " + token)
             .build();
@@ -44,7 +48,7 @@ public class GitHubClient {
                 throw new InternalServerErrorException("Ошибка сервера при запросе информации о репозитории");
             })
             .bodyToMono(RepositoryResponse.class)
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -62,7 +66,7 @@ public class GitHubClient {
             })
             .bodyToMono(new ParameterizedTypeReference<List<RepositoryEventResponse>>() {
             })
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 }

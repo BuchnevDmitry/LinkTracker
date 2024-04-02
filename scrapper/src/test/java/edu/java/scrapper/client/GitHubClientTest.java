@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -30,7 +29,7 @@ public class GitHubClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl, "token");
+        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl, "token", new RetryPolicy());
     }
 
     @Test

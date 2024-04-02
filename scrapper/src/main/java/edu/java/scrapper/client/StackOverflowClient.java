@@ -18,15 +18,19 @@ public class StackOverflowClient {
 
     private final WebClient webClient;
 
-    private String order = "order";
-    private String sort = "sort";
-    private String site = "site";
+    private final RetryPolicy retryPolicy;
+
+    private final String order = "order";
+    private final String sort = "sort";
+    private final String site = "site";
 
     public StackOverflowClient(
         WebClient.Builder webClientBuilder,
         @Value("${app.url.stack-overflow}")
-        String baseUrl
+        String baseUrl,
+        RetryPolicy retryPolicy
     ) {
+        this.retryPolicy = retryPolicy;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
@@ -46,7 +50,7 @@ public class StackOverflowClient {
                 throw new InternalServerErrorException("Ошибка сервера при запросе информации o вопросе");
             })
             .bodyToMono(QuestionResponse.class)
-            .retryWhen(RetryUtil.exponential(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.exponential(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 
@@ -68,7 +72,7 @@ public class StackOverflowClient {
                     """);
             })
             .bodyToMono(AnswerResponse.class)
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.linear(Duration.ofSeconds(2), 3, List.of(InternalServerErrorException.class)))
             .block();
     }
 }

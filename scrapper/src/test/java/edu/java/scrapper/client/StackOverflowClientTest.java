@@ -29,7 +29,7 @@ public class StackOverflowClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl);
+        stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl, new RetryPolicy());
     }
 
     @Test

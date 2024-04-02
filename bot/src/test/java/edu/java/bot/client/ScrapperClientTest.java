@@ -30,7 +30,7 @@ public class ScrapperClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        scrapperClient = new ScrapperClient(WebClient.builder(), baseUrl);
+        scrapperClient = new ScrapperClient(WebClient.builder(), baseUrl, new RetryPolicy());
     }
 
     @Test

@@ -3,19 +3,18 @@ package edu.java.scrapper.client;
 import java.time.Duration;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Slf4j
-public class RetryUtil {
+@Component
+public class RetryPolicy {
 
     private static final String DURATION = "duration: ";
     private static final String NOT_EXECUTE = "Не удалось выполнить запрос после повторных попыток";
 
-    private RetryUtil() {
-    }
-
-    public static Retry linear(
+    public Retry linear(
         Duration initialBackoff,
         int maxAttempts,
         List<Class<? extends Throwable>> retryableExceptions
@@ -31,7 +30,7 @@ public class RetryUtil {
 
     }
 
-    public static Retry constant(
+    public Retry constant(
         Duration initialBackoff,
         int maxAttempts,
         List<Class<? extends Throwable>> retryableExceptions
@@ -42,7 +41,7 @@ public class RetryUtil {
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new RuntimeException(NOT_EXECUTE));
     }
 
-    public static Retry exponential(
+    public Retry exponential(
         Duration initialBackoff,
         int maxAttempts,
         List<Class<? extends Throwable>> retryableExceptions
@@ -53,7 +52,7 @@ public class RetryUtil {
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new RuntimeException(NOT_EXECUTE));
     }
 
-    private static boolean isRetryableException(
+    private boolean isRetryableException(
         Throwable throwable,
         List<Class<? extends Throwable>> retryableExceptions
     ) {

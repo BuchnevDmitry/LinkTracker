@@ -19,10 +19,14 @@ public class BotClient {
 
     private final WebClient webClient;
 
+    private final RetryPolicy retryPolicy;
+
     public BotClient(
         WebClient.Builder webClientBuilder,
-        @Value("${app.link.bot-uri}") String baseUrl
+        @Value("${app.link.bot-uri}") String baseUrl,
+        RetryPolicy retryPolicy
     ) {
+        this.retryPolicy = retryPolicy;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
@@ -38,7 +42,7 @@ public class BotClient {
                 throw new InternalServerErrorException("Ошибка сервера при запросе информации o вопросе");
             })
             .toBodilessEntity()
-            .retryWhen(RetryUtil.linear(Duration.ofSeconds(2), 6, List.of(InternalServerErrorException.class)))
+            .retryWhen(retryPolicy.linear(Duration.ofSeconds(2), 6, List.of(InternalServerErrorException.class)))
             .block();
     }
 
