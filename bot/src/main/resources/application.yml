@@ -13,6 +13,16 @@ spring:
   jackson:
     time-zone: UTC
 
+kafka:
+  bootstrapServers: localhost:29092
+  groupId: bot
+  autoOffsetReset: latest
+  maxPollIntervalMs: 300_000
+  enableAutoCommit: true
+  concurrency: 1
+  schemaRegistryUrl: 'http://localhost:28081'
+
+
 bucket4j:
   enabled: true
   filters:

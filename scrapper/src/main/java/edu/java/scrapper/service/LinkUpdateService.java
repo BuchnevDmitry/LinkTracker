@@ -1,6 +1,5 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.domain.model.Chat;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.handler.link.HandlerLinkFacade;
@@ -8,11 +7,11 @@ import edu.java.scrapper.model.HandlerData;
 import edu.java.scrapper.model.LinkStatus;
 import edu.java.scrapper.model.request.LinkUpdateRequest;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +23,7 @@ public class LinkUpdateService {
 
     private final HandlerLinkFacade handlerLinkFacade;
 
-    private final BotClient botClient;
+    private final Updater updater;
 
     public void performLinkUpdate() {
         log.info("Ищем обновление!");
@@ -39,7 +38,7 @@ public class LinkUpdateService {
             List<Long> chatIds = chats.stream().map(Chat::getId).toList();
             if (handlerData.typeUpdate().equals(LinkStatus.UPDATE)) {
                 try {
-                    botClient.sendLinkUpdate(new LinkUpdateRequest(
+                    updater.sendLinkUpdate(new LinkUpdateRequest(
                         link.getId(),
                         new URI(link.getUrl()),
                         handlerData.description(),
