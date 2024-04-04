@@ -6,6 +6,7 @@ import edu.java.scrapper.model.request.LinkUpdateRequest;
 import edu.java.scrapper.model.response.ApiErrorResponse;
 import java.time.Duration;
 import java.util.List;
+import edu.java.scrapper.service.Updater;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
 @SuppressWarnings("MagicNumber")
-public class BotClient {
+public class BotClient implements Updater {
 
     private final WebClient webClient;
 
@@ -30,11 +31,11 @@ public class BotClient {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
-    public void addUpdate(LinkUpdateRequest linkRequest) {
+    public void sendLinkUpdate(LinkUpdateRequest update) {
         webClient.post()
             .uri("/updates")
             .contentType(APPLICATION_JSON)
-            .body(Mono.just(linkRequest), LinkUpdateRequest.class)
+            .body(Mono.just(update), LinkUpdateRequest.class)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(apiErrorResponse -> Mono.error(new BadRequestException(apiErrorResponse.description()))))

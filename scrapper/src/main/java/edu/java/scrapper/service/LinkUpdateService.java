@@ -39,13 +39,14 @@ public class LinkUpdateService {
             List<Long> chatIds = chats.stream().map(Chat::getId).toList();
             if (handlerData.typeUpdate().equals(LinkStatus.UPDATE)) {
                 try {
-                    botClient.addUpdate(new LinkUpdateRequest(
+                    botClient.sendLinkUpdate(new LinkUpdateRequest(
                         link.getId(),
                         new URI(link.getUrl()),
                         handlerData.description(),
                         chatIds
                     ));
-                } catch (URISyntaxException e) {
+                } catch (Exception e) {
+                    log.error("Error send update with help NotificationGateway: " + e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
