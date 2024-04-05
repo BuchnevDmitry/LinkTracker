@@ -25,9 +25,9 @@ public class GitHubClient {
 
     public GitHubClient(
         WebClient.Builder webClientBuilder,
-        @Value("${app.link.git-hub-uri}")
+        @Value("${app.git-hub-uri}")
         String baseUrl,
-        @Value("${app.link.git-hub-token}")
+        @Value("${app.git-hub-token}")
         String token,
         RetryPolicy retryPolicy
     ) {

@@ -1,6 +1,10 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
   scrapper-uri: http://localhost:8080
+  scrapper-topic:
+    name: "scrapper.message"
+  dlq-topic:
+    name: "scrapper.message_dlq"
 
 spring:
   cache:
@@ -14,13 +18,22 @@ spring:
     time-zone: UTC
 
 kafka:
-  bootstrapServers: localhost:29092
-  groupId: bot
-  autoOffsetReset: latest
-  maxPollIntervalMs: 300_000
-  enableAutoCommit: true
-  concurrency: 1
-  schemaRegistryUrl: 'http://localhost:28081'
+  consumer:
+    bootstrapServers: localhost:29092
+    groupId: bot_consumer
+    autoOffsetReset: latest
+    maxPollIntervalMs: 300_000
+    enableAutoCommit: true
+    concurrency: 1
+  producer:
+    bootstrapServers: localhost:29092
+    clientId: bot_producer
+    acksMode: all
+    deliveryTimeout: 60s
+    lingerMs: 12_000
+    batchSize: 100_000
+    maxInFlightPerConnection: 5
+    enableIdempotence: true # to handle specific retry errors
 
 
 bucket4j:

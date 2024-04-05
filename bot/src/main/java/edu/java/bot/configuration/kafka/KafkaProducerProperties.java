@@ -1,13 +1,13 @@
-package edu.java.scrapper.configuration.kafka;
+package edu.java.bot.configuration.kafka;
 
 import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Setter
 @Getter
-@ConfigurationProperties("kafka")
+@Setter
+@ConfigurationProperties("kafka.producer")
 public class KafkaProducerProperties {
     private String bootstrapServers;
     private String clientId;
@@ -21,5 +21,4 @@ public class KafkaProducerProperties {
     private String securityProtocol;
     private String saslMechanism;
     private String saslJaasConfig;
-    private String schemaRegistryUrl;
 }

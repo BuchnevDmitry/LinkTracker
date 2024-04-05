@@ -1,6 +1,6 @@
-package edu.java.scrapper.configuration.kafka;
+package edu.java.bot.configuration.kafka;
 
-import edu.java.scrapper.model.request.LinkUpdateRequest;
+import edu.java.bot.model.request.LinkUpdateRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -32,7 +32,10 @@ public class KafkaProducerConfig {
         );
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, kafkaProducerProperties.getEnableIdempotence());
         props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class
+        );
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(props);
     }

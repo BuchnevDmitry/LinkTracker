@@ -16,7 +16,9 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 public class KafkaConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, LinkUpdateRequest> linkUpdateConsumerFactory(KafkaConsumerProperties kafkaConsumerProperties) {
+    public ConsumerFactory<String, LinkUpdateRequest> linkUpdateConsumerFactory(
+        KafkaConsumerProperties kafkaConsumerProperties
+    ) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConsumerProperties.getBootstrapServers());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConsumerProperties.getGroupId());
@@ -33,9 +35,11 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> linkUpdateContainerFactory(
-        ConsumerFactory<String, LinkUpdateRequest> consumerFactory, KafkaConsumerProperties kafkaConsumerProperties
+        ConsumerFactory<String, LinkUpdateRequest> consumerFactory,
+        KafkaConsumerProperties kafkaConsumerProperties
     ) {
-        ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> factory =
+            new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setConcurrency(kafkaConsumerProperties.getConcurrency());
         return factory;

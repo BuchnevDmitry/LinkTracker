@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties("kafka")
+@ConfigurationProperties("kafka.consumer")
 public class KafkaConsumerProperties {
     private String bootstrapServers;
     private String groupId;
@@ -14,5 +14,4 @@ public class KafkaConsumerProperties {
     private Integer maxPollIntervalMs;
     private Boolean enableAutoCommit;
     private Integer concurrency;
-    private String schemaRegistryUrl;
 }

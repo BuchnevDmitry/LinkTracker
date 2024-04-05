@@ -36,6 +36,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/zookeeper/config/zookeeper_jaas.conf"
     volumes:
+      - ./zoo/data:/var/lib/zookeeper/data
+      - ./zoo/log:/var/lib/zookeeper/log
       - ./scrapper/src/main/resources/docker/zookeeper_jaas_config.conf:/etc/zookeeper/config/zookeeper_jaas.conf
     ports:
       - "22181:2181"
@@ -59,6 +61,7 @@ services:
       TOPIC_AUTO_CREATE: scrapper.message:1:1
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_config_jaas.conf"
     volumes:
+      - ./broker/data:/var/lib/kafka/data
       - ./scrapper/src/main/resources/docker/kafka_jaas_config.conf:/etc/kafka/kafka_config_jaas.conf
     networks:
       - backend

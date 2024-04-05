@@ -3,12 +3,12 @@ app:
     enable: true
     interval: PT10S
     force-check-delay: PT10S
-  link:
-    git-hub-uri: "https://api.github.com/repos/"
-    git-hub-token: ${GITHUB_TOKEN}
-    stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
-    bot-uri: "http://localhost:8090"
+  git-hub-uri: "https://api.github.com/repos/"
+  git-hub-token: ${GITHUB_TOKEN}
+  stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
+  bot-uri: "http://localhost:8090"
   database-access-type: jdbc
+  use-queue: true
 spring:
   cache:
     cache-names:
@@ -57,4 +57,3 @@ kafka:
   batchSize: 100_000
   maxInFlightPerConnection: 5
   enableIdempotence: true # to handle specific retry errors
-  schemaRegistryUrl: 'http://localhost:28081'
