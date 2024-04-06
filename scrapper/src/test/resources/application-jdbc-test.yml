@@ -7,8 +7,10 @@ app:
   git-hub-token: ${GITHUB_TOKEN}
   stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
   bot-uri: "http://localhost:8090"
+  scrapper-topic:
+    name: "scrapper.message"
   database-access-type: jdbc
-  use-queue: false
+  use-queue: true
 spring:
   cache:
     cache-names:

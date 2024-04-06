@@ -9,7 +9,7 @@ app:
 spring:
   cache:
     cache-names:
-      - rate-limit-buckets-bot
+      - rate-limit-buckets-bot-1
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
   application:
@@ -39,7 +39,7 @@ kafka:
 bucket4j:
   enabled: true
   filters:
-    - cache-name: rate-limit-buckets-bot
+    - cache-name: rate-limit-buckets-bot-1
       url: .*
       strategy: first
       http-response-body: "{ \"code\": 429, \"error\": \"Too Many Requests\", \"description\": \"You have exhausted your API Request Quota\" }"
