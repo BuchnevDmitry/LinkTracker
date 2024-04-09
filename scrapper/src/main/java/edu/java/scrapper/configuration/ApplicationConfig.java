@@ -2,10 +2,12 @@ package edu.java.scrapper.configuration;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "app.link", ignoreUnknownFields = false)
+@EnableCaching
 public record ApplicationConfig(
     @NotEmpty
     String gitHubUri,
