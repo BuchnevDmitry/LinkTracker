@@ -21,7 +21,7 @@ public class RetryPolicy {
     ) {
         return Retry.fixedDelay(maxAttempts, initialBackoff)
             .doBeforeRetryAsync(signal -> {
-                log.info(DURATION + (signal.totalRetries()));
+                retryLog(signal.totalRetries());
                 return Mono.delay(Duration.ofSeconds(
                     (initialBackoff.getSeconds() * signal.totalRetries()) - initialBackoff.getSeconds())).then();
             })
@@ -36,7 +36,7 @@ public class RetryPolicy {
         List<Class<? extends Throwable>> retryableExceptions
     ) {
         return Retry.fixedDelay(maxAttempts, initialBackoff)
-            .doAfterRetry(x -> log.info(DURATION + x.totalRetries()))
+            .doAfterRetry(x -> retryLog(x.totalRetries()))
             .filter(throwable -> isRetryableException(throwable, retryableExceptions))
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new RuntimeException(NOT_EXECUTE));
     }
@@ -47,9 +47,13 @@ public class RetryPolicy {
         List<Class<? extends Throwable>> retryableExceptions
     ) {
         return Retry.backoff(maxAttempts, initialBackoff)
-            .doAfterRetry(x -> log.info(DURATION + x.totalRetries()))
+            .doAfterRetry(x -> retryLog(x.totalRetries()))
             .filter(throwable -> isRetryableException(throwable, retryableExceptions))
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> new RuntimeException(NOT_EXECUTE));
+    }
+
+    private void retryLog(long totalRetries) {
+        log.info(DURATION + totalRetries);
     }
 
     private boolean isRetryableException(

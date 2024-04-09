@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -90,26 +91,35 @@ public class ScrapperClient {
 
     private ExchangeFilterFunction errorHandlingFilter() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            if (clientResponse.statusCode() != null) {
-                if (clientResponse.statusCode().is5xxServerError()) {
-                    return Mono.error(new InternalServerErrorException("Internal Server Error"));
-                } else if (clientResponse.statusCode().is4xxClientError()) {
-                    return clientResponse.bodyToMono(ApiErrorResponse.class)
-                        .flatMap(errorBody -> {
-                            String method = clientResponse.request().getMethod().toString();
-                            String path = clientResponse.request().getURI().getPath();
-                            log.error(String.format(
-                                "При выполнении операции {%s} {%s} возникла ошибка: {%s}",
-                                method,
-                                path,
-                                errorBody.description()
-                            ));
-                            return Mono.error(new ResponseException(errorBody.description()));
-                        });
-                }
+            if (clientResponse.statusCode() == null) {
+                return Mono.just(clientResponse);
+            }
+            if (clientResponse.statusCode().is5xxServerError()) {
+                return handle5xxError();
+            } else if (clientResponse.statusCode().is4xxClientError()) {
+                return handle4xxError(clientResponse);
             }
             return Mono.just(clientResponse);
         });
+    }
+
+    private Mono<ClientResponse> handle4xxError(ClientResponse clientResponse) {
+        return clientResponse.bodyToMono(ApiErrorResponse.class)
+            .flatMap(errorBody -> {
+                String method = clientResponse.request().getMethod().toString();
+                String path = clientResponse.request().getURI().getPath();
+                log.error(String.format(
+                    "При выполнении операции {%s} {%s} возникла ошибка: {%s}",
+                    method,
+                    path,
+                    errorBody.description()
+                ));
+                return Mono.error(new ResponseException(errorBody.description()));
+            });
+    }
+
+    private Mono<ClientResponse> handle5xxError() {
+        return Mono.error(new InternalServerErrorException("Internal Server Error"));
     }
 
 }
