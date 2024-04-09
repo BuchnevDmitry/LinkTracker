@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.client.ScrapperClient;
+import edu.java.bot.client.ScrapperClientTest;
 import edu.java.bot.command.Command;
 import edu.java.bot.command.impl.HelpCommand;
 import edu.java.bot.command.impl.ListCommand;

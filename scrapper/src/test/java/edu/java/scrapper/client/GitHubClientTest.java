@@ -29,7 +29,7 @@ public class GitHubClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl, "token");
+        gitHubClient = new GitHubClient(WebClient.builder(), baseUrl, "token", new RetryPolicy());
     }
 
     @Test
@@ -107,5 +107,16 @@ public class GitHubClientTest {
         Assertions.assertEquals(response.type(), "IssuesEvent");
         Assertions.assertEquals(response.payload().action(), "opened" );
         Assertions.assertEquals(response.createdAt(), OffsetDateTime.parse("2024-03-17T14:33:12Z"));
+    }
+
+    @Test
+    void retryTest() {
+        String username = "BuchnevDmitry";
+        String repositoryName = "twitter";
+        stubFor(get(urlEqualTo(String.format("/%s/%s", username, repositoryName)))
+            .willReturn(aResponse()
+                .withStatus(500)));
+        RepositoryRequest request = new RepositoryRequest(username, repositoryName);
+        Assertions.assertThrows(RuntimeException.class, () -> gitHubClient.fetchRepository(request));
     }
 }

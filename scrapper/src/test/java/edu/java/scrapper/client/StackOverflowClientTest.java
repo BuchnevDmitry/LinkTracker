@@ -5,7 +5,6 @@ import edu.java.scrapper.model.request.QuestionRequest;
 import edu.java.scrapper.model.response.AnswerResponse;
 import edu.java.scrapper.model.response.QuestionResponse;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +29,7 @@ public class StackOverflowClientTest {
     @BeforeEach
     public void setUp() {
         String baseUrl = wireMock.baseUrl();
-        System.out.println(baseUrl);
-        stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl);
+        stackOverflowClient = new StackOverflowClient(WebClient.builder(), baseUrl, new RetryPolicy());
     }
 
     @Test
@@ -120,6 +118,20 @@ public class StackOverflowClientTest {
         AnswerResponse response = stackOverflowClient.fetchQuestionAnswer(request);
 
         Assertions.assertEquals(response.items().get(0).creationDate(), Instant.ofEpochSecond(Long.parseLong("1710738709")).atOffset(ZoneOffset.UTC));
+    }
+
+    @Test
+    void retryTest() {
+        String number = "10";
+        String order = "desc";
+        String sort = "creation";
+        String site = "stackoverflow";
+        String urlPart = String.format("order=%s&sort=%s&site=%s", order, sort, site);
+        stubFor(get(urlEqualTo(String.format("/%s/answers?%s", number, urlPart)))
+            .willReturn(aResponse()
+                    .withStatus(501)));
+        QuestionRequest request = new QuestionRequest(number, order, sort, site);
+        Assertions.assertThrows(RuntimeException.class, () -> stackOverflowClient.fetchQuestionAnswer(request));
     }
 
 }
