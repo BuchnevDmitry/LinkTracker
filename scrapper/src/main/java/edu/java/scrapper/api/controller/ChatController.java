@@ -2,6 +2,7 @@ package edu.java.scrapper.api.controller;
 
 import edu.java.scrapper.model.request.AddChatRequest;
 import edu.java.scrapper.service.ChatService;
+import io.micrometer.core.instrument.Counter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,9 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tg-chat")
 public class ChatController {
     private final ChatService chatService;
+    private final Counter messageCounter;
 
-    public ChatController(ChatService chatService) {
+    public ChatController(
+        ChatService chatService,
+        Counter messageCounter
+    ) {
         this.chatService = chatService;
+        this.messageCounter = messageCounter;
     }
 
     @Operation(summary = "Зарегистрировать чат")
@@ -37,6 +43,7 @@ public class ChatController {
         @PathVariable Long id,
         @RequestBody @Valid AddChatRequest request
     ) {
+        messageCounter.increment();
         chatService.register(id, request);
     }
 
@@ -49,6 +56,7 @@ public class ChatController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteChat(@PathVariable @NotNull Long id) {
+        messageCounter.increment();
         chatService.unregister(id);
     }
 }
