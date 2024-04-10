@@ -20,9 +20,9 @@ public class StackOverflowClient {
 
     private final RetryPolicy retryPolicy;
 
-    private final String order = "order";
-    private final String sort = "sort";
-    private final String site = "site";
+    private static final String ORDER = "order";
+    private static final String SORT = "sort";
+    private static final String SITE = "site";
 
     public StackOverflowClient(
         WebClient.Builder webClientBuilder,
@@ -38,9 +38,9 @@ public class StackOverflowClient {
         return this.webClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path(String.format("%s", request.getNumber()))
-                .queryParam(order, request.getOrder())
-                .queryParam(sort, request.getSort())
-                .queryParam(site, request.getSite())
+                .queryParam(ORDER, request.getOrder())
+                .queryParam(SORT, request.getSort())
+                .queryParam(SITE, request.getSite())
                 .build())
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, response -> {
@@ -58,9 +58,9 @@ public class StackOverflowClient {
         return this.webClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path(String.format("%s/answers", request.getNumber()))
-                .queryParam(order, request.getOrder())
-                .queryParam(sort, request.getSort())
-                .queryParam(site, request.getSite())
+                .queryParam(ORDER, request.getOrder())
+                .queryParam(SORT, request.getSort())
+                .queryParam(SITE, request.getSite())
                 .build())
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, response -> {
