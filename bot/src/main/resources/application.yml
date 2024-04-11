@@ -33,7 +33,7 @@ kafka:
     lingerMs: 12_000
     batchSize: 100_000
     maxInFlightPerConnection: 5
-    enableIdempotence: true # to handle specific retry errors
+    enableIdempotence: true
 
 
 bucket4j:
