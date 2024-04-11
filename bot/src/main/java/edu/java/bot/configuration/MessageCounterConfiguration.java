@@ -1,4 +1,4 @@
-package edu.java.scrapper.configuration;
+package edu.java.bot.configuration;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -11,7 +11,7 @@ public class MessageCounterConfiguration {
     public Counter messagesProcessedCounter(MeterRegistry meterRegistry) {
         return Counter.builder("messages_processed_counter")
             .description("Number of processed messages")
-            .tags("application", "scrapper")
+            .tags("application", "bot")
             .register(meterRegistry);
     }
 }

@@ -8,23 +8,28 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.command.Command;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.UserMessageService;
+import io.micrometer.core.instrument.Counter;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class LinkTrackerBot extends TelegramBot {
 
     private final UserMessageService userMessageService;
     private final List<Command> commandList;
+    private final Counter messageCounter;
 
     public LinkTrackerBot(
-        ApplicationConfig applicationConfig, UserMessageService userMessageService, List<Command> commandList
+        ApplicationConfig applicationConfig,
+        UserMessageService userMessageService,
+        List<Command> commandList,
+        Counter messageCounter
     ) {
         super(applicationConfig.telegramToken());
         this.userMessageService = userMessageService;
         this.commandList = commandList;
+        this.messageCounter = messageCounter;
     }
 
     @PostConstruct
@@ -35,6 +40,7 @@ public class LinkTrackerBot extends TelegramBot {
 
     private void serve(Update update) {
         if (update.message() != null) {
+            messageCounter.increment();
             this.execute(userMessageService.process(update));
         }
     }
