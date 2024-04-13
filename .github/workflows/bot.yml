@@ -43,7 +43,7 @@ jobs:
           context: .
           file: bot.Dockerfile
           push: true
-          tags: ${{ github.repository }}/bot:latest
+          tags: linktracker/bot:latest
           labels: |
             org.opencontainers.image.title=Bot
             org.opencontainers.image.description=Your bot application
