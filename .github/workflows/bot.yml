@@ -6,6 +6,9 @@ on:
     paths:
       - .github/workflows/bot.yml
       - bot/**
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -37,6 +40,13 @@ jobs:
           title: Code Coverage
           update-comment: true
 
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -48,8 +58,6 @@ jobs:
             org.opencontainers.image.title=Bot
             org.opencontainers.image.description=Your bot application
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
-        env:
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
   checkstyle:
     name: checkstyle
