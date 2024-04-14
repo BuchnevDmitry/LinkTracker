@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./bot
-          file: bot.Dockerfile
+          file: ./bot/bot.Dockerfile
           push: true
           tags: linktracker/bot:latest
           labels: |
