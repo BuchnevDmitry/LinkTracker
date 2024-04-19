@@ -6,7 +6,7 @@ app:
   git-hub-uri: "https://api.github.com/repos/"
   git-hub-token: ${GITHUB_TOKEN}
   stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
-  bot-uri: "http://localhost:8090"
+  bot-uri: "http://${BOT_HOST}:${BOT_PORT}"
   scrapper-topic:
     name: "scrapper.message"
   database-access-type: jdbc
@@ -22,7 +22,7 @@ spring:
   application:
     name: scrapper
   datasource:
-    url: jdbc:postgresql://localhost:5432/${SCRAPPER_DB_NAME}
+    url: jdbc:postgresql://${SCRAPPER_DB_HOST}:5432/${SCRAPPER_DB_NAME}
     username: ${SCRAPPER_USERNAME}
     password: ${SCRAPPER_PASSWORD}
     driverClassName: org.postgresql.Driver
@@ -31,7 +31,7 @@ spring:
 
 
 server:
-  port: 8080
+  port: ${SCRAPPER_PORT}
 
 logging:
   config: classpath:log4j2-plain.xml
@@ -51,19 +51,19 @@ bucket4j:
               unit: hours
 
 kafka:
-  bootstrapServers: localhost:29092
+  bootstrapServers: ${KAFKA_HOST}:${KAFKA_PORT}
   clientId: scrapper
   acksMode: all
   deliveryTimeout: 60s
   lingerMs: 12_000
   batchSize: 100_000
   maxInFlightPerConnection: 5
-  enableIdempotence: true # to handle specific retry errors
+  enableIdempotence: true
 
 
 management:
   server:
-    port: 8081
+    port: ${SCRAPPER_PORT_METRICS}
   endpoints:
     web:
       exposure:
@@ -74,4 +74,3 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-

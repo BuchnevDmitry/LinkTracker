@@ -1,6 +1,6 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
-  scrapper-uri: http://localhost:8080
+  scrapper-uri: "http://${SCRAPPER_HOST}:${SCRAPPER_PORT}"
   scrapper-topic:
     name: "scrapper.message"
   dlq-topic:
@@ -19,14 +19,14 @@ spring:
 
 kafka:
   consumer:
-    bootstrapServers: localhost:29092
+    bootstrapServers: ${KAFKA_HOST}:${KAFKA_PORT}
     groupId: bot_consumer
     autoOffsetReset: latest
     maxPollIntervalMs: 300_000
     enableAutoCommit: true
     concurrency: 1
   producer:
-    bootstrapServers: localhost:29092
+    bootstrapServers: ${KAFKA_HOST}:${KAFKA_PORT}
     clientId: bot_producer
     acksMode: all
     deliveryTimeout: 60s
@@ -52,7 +52,7 @@ bucket4j:
 
 management:
   server:
-    port: 8091
+    port: ${BOT_PORT_METRICS}
   endpoints:
     web:
       exposure:
@@ -65,7 +65,7 @@ management:
       application: ${spring.application.name}
 
 server:
-  port: 8090
+  port: ${BOT_PORT}
 
 logging:
   config: classpath:log4j2-plain.xml
