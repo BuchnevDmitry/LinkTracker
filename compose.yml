@@ -1,5 +1,6 @@
 services:
   postgresql:
+    container_name: postgresql
     image: postgres:16
     ports:
       - "5432:5432"
@@ -24,7 +25,7 @@ services:
       - --password=${SCRAPPER_PASSWORD}
       - update
     volumes:
-      - ./migrations:/liquibase/changelog
+      - ./migrations/changelog:/liquibase/changelog
     networks:
       - backend
 

@@ -16,15 +16,8 @@ public class LinkUpdateListener {
 
     private final LinkUpdateService linkUpdateService;
 
-    private final DeadLetterQueueProducer dlqProducer;
-
     @KafkaListener(topics = "${app.scrapper-topic.name}", containerFactory = "linkUpdateContainerFactory")
     public void handleMessage(@Payload @Valid LinkUpdateRequest linkUpdateRequest) {
-        try {
-            linkUpdateService.update(linkUpdateRequest);
-        } catch (Exception e) {
-            log.info("Error handleMessage with KafkaListener: " + e.getMessage());
-            dlqProducer.sendMessage(linkUpdateRequest);
-        }
+        linkUpdateService.update(linkUpdateRequest);
     }
 }

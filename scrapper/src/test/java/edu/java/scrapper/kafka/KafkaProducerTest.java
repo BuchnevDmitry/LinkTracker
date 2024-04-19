@@ -43,13 +43,12 @@ public class KafkaProducerTest extends IntegrationTest {
 
     @DynamicPropertySource
     static void registerKafkaProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.consumer.bootstrap-servers", kafka::getBootstrapServers);
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("kafka.bootstrapServers", kafka::getBootstrapServers);
     }
 
     @Autowired
     private Updater producer;
-
 
     @Test
     public void sendMessageWithValidBodyTest() throws Exception {
