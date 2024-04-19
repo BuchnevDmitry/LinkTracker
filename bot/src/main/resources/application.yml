@@ -1,6 +1,6 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
-  scrapper-uri: "http://${SCRAPPER_HOST}:${SCRAPPER_PORT}"
+  scrapper-uri: "http://${SCRAPPER_HOST}:8080"
   scrapper-topic:
     name: "scrapper.message"
   dlq-topic:
@@ -52,7 +52,7 @@ bucket4j:
 
 management:
   server:
-    port: ${BOT_PORT_METRICS}
+    port: 8091
   endpoints:
     web:
       exposure:
@@ -65,7 +65,7 @@ management:
       application: ${spring.application.name}
 
 server:
-  port: ${BOT_PORT}
+  port: 8090
 
 logging:
   config: classpath:log4j2-plain.xml
