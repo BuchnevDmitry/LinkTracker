@@ -6,7 +6,7 @@ app:
   git-hub-uri: "https://api.github.com/repos/"
   git-hub-token: ${GITHUB_TOKEN}
   stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
-  bot-uri: "http://${BOT_HOST}:8090"
+  bot-uri: "http://${BOT_HOST:localhost}:8090"
   scrapper-topic:
     name: "scrapper.message"
   database-access-type: jdbc

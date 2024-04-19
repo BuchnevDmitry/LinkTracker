@@ -1,6 +1,6 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
-  scrapper-uri: "http://${SCRAPPER_HOST}:8080"
+  scrapper-uri: "http://${SCRAPPER_HOST:localhost}:8080"
   scrapper-topic:
     name: "scrapper.message"
   dlq-topic:
