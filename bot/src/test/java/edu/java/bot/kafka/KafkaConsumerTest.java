@@ -16,9 +16,17 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.test.annotation.DirtiesContext;
@@ -37,6 +45,7 @@ public class KafkaConsumerTest {
     public static final String TOPIC_NAME_SEND_CLIENT_DLQ = "scrapper.message_dlq";
     public static final String TOPIC_NAME_SEND_CLIENT = "scrapper.message";
 
+
     @Container
     public static KafkaContainer kafka =
         new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.4"));
@@ -49,8 +58,8 @@ public class KafkaConsumerTest {
     @DynamicPropertySource
     static void registerKafkaProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("kafka.consumer.bootstrapServers", kafka::getBootstrapServers);
-        registry.add("kafka.producer.bootstrapServers", kafka::getBootstrapServers);
+        registry.add("spring.kafka.consumer.bootstrapServers", kafka::getBootstrapServers);
+        registry.add("spring.kafka.producer.bootstrapServers", kafka::getBootstrapServers);
     }
 
     @Test
@@ -84,6 +93,6 @@ public class KafkaConsumerTest {
         consumer.close();
 
         assertEquals(1, records.count());
-
     }
+
 }

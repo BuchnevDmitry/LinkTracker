@@ -7,6 +7,24 @@ app:
     name: "scrapper.message_dlq"
 
 spring:
+  kafka:
+    consumer:
+      bootstrapServers: localhost:29092
+      groupId: bot_consumer
+      autoOffsetReset: latest
+      enableAutoCommit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    producer:
+      bootstrapServers: localhost:29092
+      clientId: bot_producer
+      acks: all
+      batch-size: 100000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   cache:
     cache-names:
       - rate-limit-buckets-bot
@@ -16,24 +34,6 @@ spring:
     name: bot
   jackson:
     time-zone: UTC
-
-kafka:
-  consumer:
-    bootstrapServers: localhost:29092
-    groupId: bot_consumer
-    autoOffsetReset: latest
-    maxPollIntervalMs: 300_000
-    enableAutoCommit: true
-    concurrency: 1
-  producer:
-    bootstrapServers: localhost:29092
-    clientId: bot_producer
-    acksMode: all
-    deliveryTimeout: 60s
-    lingerMs: 12_000
-    batchSize: 100_000
-    maxInFlightPerConnection: 5
-    enableIdempotence: true
 
 
 bucket4j:

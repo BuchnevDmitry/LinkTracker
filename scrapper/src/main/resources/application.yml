@@ -12,6 +12,14 @@ app:
   database-access-type: jdbc
   use-queue: true
 spring:
+  kafka:
+    producer:
+      bootstrapServers: localhost:29092
+      clientId: scrapper_producer
+      acks: all
+      batch-size: 100000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   cache:
     cache-names:
       - rate-limit-buckets
@@ -49,17 +57,6 @@ bucket4j:
             - capacity: 100
               time: 1
               unit: hours
-
-kafka:
-  bootstrapServers: localhost:29092
-  clientId: scrapper
-  acksMode: all
-  deliveryTimeout: 60s
-  lingerMs: 12_000
-  batchSize: 100_000
-  maxInFlightPerConnection: 5
-  enableIdempotence: true # to handle specific retry errors
-
 
 management:
   server:
