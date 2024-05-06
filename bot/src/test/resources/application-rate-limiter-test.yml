@@ -16,8 +16,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
-
+        spring.json.trusted.packages: "edu.java.bot.model.request"
     producer:
       bootstrapServers: localhost:29092
       clientId: bot_producer
@@ -25,9 +24,11 @@ spring:
       batch-size: 100000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "edu.java.bot.model.request"
   cache:
     cache-names:
-      - rate-limit-buckets-bot
+      - rate-limit-buckets-bot-1
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
   application:
@@ -36,10 +37,11 @@ spring:
     time-zone: UTC
 
 
+
 bucket4j:
   enabled: true
   filters:
-    - cache-name: rate-limit-buckets-bot
+    - cache-name: rate-limit-buckets-bot-1
       url: .*
       strategy: first
       http-response-body: "{ \"code\": 429, \"error\": \"Too Many Requests\", \"description\": \"You have exhausted your API Request Quota\" }"

@@ -38,7 +38,7 @@ public abstract class IntegrationTest {
         try {
             Connection connection = DriverManager.getConnection(c.getJdbcUrl(), c.getUsername(), c.getPassword());
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            Path changelogPath = new File(".").toPath().toAbsolutePath().getParent().getParent().resolve("migrations");
+            Path changelogPath = new File(".").toPath().toAbsolutePath().getParent().getParent().resolve("migrations").resolve("changelog");
             DirectoryResourceAccessor changelogDir = new DirectoryResourceAccessor(changelogPath);
             Liquibase liquibase = new Liquibase("master.xml", changelogDir, database);
             liquibase.update(new Contexts(), new LabelExpression());

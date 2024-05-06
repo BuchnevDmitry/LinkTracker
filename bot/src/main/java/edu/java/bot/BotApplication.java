@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
-@EnableConfigurationProperties(ApplicationConfig.class)
+@EnableConfigurationProperties({ApplicationConfig.class})
 @EnableCaching
 @ConditionalOnBucket4jEnabled
 public class BotApplication {

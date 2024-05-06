@@ -3,12 +3,12 @@ app:
     enable: true
     interval: PT10S
     force-check-delay: PT10S
-  link:
-    git-hub-uri: "https://api.github.com/repos/"
-    git-hub-token: ${GITHUB_TOKEN}
-    stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
-    bot-uri: "http://localhost:8090"
+  git-hub-uri: "https://api.github.com/repos/"
+  git-hub-token: ${GITHUB_TOKEN}
+  stack-overflow-uri: "https://api.stackexchange.com/2.3/questions/"
+  bot-uri: "http://localhost:8090"
   database-access-type: jpa
+  use-queue: false
 spring:
   cache:
     cache-names:
@@ -38,13 +38,22 @@ bucket4j:
   enabled: true
   filters:
     - cache-name: rate-limit-buckets-3
-      url: /tg-chat.*
+      url: .*
       strategy: first
-      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
+      http-response-body: "{ \"code\": 429, \"error\": \"Too Many Requests\", \"description\": \"You have exhausted your API Request Quota\" }"
       rate-limits:
         - cache-key: getRemoteAddr()
           bandwidths:
-            - capacity: 3
-              time: 2
-              unit: minutes
+            - capacity: 100
+              time: 1
+              unit: hours
 
+kafka:
+  bootstrapServers: localhost:29092
+  clientId: scrapper
+  acksMode: all
+  deliveryTimeout: 60s
+  lingerMs: 12_000
+  batchSize: 100_000
+  maxInFlightPerConnection: 5
+  enableIdempotence: true # to handle specific retry errors
