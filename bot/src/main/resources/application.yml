@@ -50,6 +50,20 @@ bucket4j:
               time: 1
               unit: hours
 
+management:
+  server:
+    port: 8091
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+      base-path: /
+      path-mapping:
+        prometheus: /metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 server:
   port: 8090
 
