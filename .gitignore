@@ -1,4 +1,6 @@
 target/
+broker/
+zoo/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

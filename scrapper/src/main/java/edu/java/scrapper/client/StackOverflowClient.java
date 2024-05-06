@@ -26,7 +26,7 @@ public class StackOverflowClient {
 
     public StackOverflowClient(
         WebClient.Builder webClientBuilder,
-        @Value("${app.url.stack-overflow}")
+        @Value("${app.stack-overflow-uri}")
         String baseUrl,
         RetryPolicy retryPolicy
     ) {

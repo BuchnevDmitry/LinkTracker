@@ -14,15 +14,14 @@ app:
 spring:
   kafka:
     producer:
-      bootstrapServers: localhost:29092
-      clientId: scrapper_producer
+      clientId: test_producer
       acks: all
       batch-size: 100000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   cache:
     cache-names:
-      - rate-limit-buckets
+      - rate-limit-buckets-4
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
   main:
@@ -47,7 +46,7 @@ logging:
 bucket4j:
   enabled: true
   filters:
-    - cache-name: rate-limit-buckets
+    - cache-name: rate-limit-buckets-4
       url: .*
       strategy: first
       http-response-body: "{ \"code\": 429, \"error\": \"Too Many Requests\", \"description\": \"You have exhausted your API Request Quota\" }"
@@ -58,12 +57,3 @@ bucket4j:
               time: 1
               unit: hours
 
-kafka:
-  bootstrapServers: localhost:29092
-  clientId: scrapper
-  acksMode: all
-  deliveryTimeout: 60s
-  lingerMs: 12_000
-  batchSize: 100_000
-  maxInFlightPerConnection: 5
-  enableIdempotence: true # to handle specific retry errors
